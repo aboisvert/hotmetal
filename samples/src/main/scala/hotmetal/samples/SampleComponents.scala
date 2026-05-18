@@ -110,7 +110,7 @@ object SampleComponents:
     NavItem("Support", "#support")
   )
 
-  def div(attrs: (Html ?=> Unit)*)(nested: Html ?=> Unit = ())(using
+  inline def div(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using
       Html
   ): Unit =
     elem("div")(attrs*)(nested)
@@ -122,7 +122,7 @@ object SampleComponents:
       flashes: Seq[FlashMessage] = Nil,
       bodyClass: String = "min-h-screen bg-slate-50 text-slate-900"
   )(
-      content: Html ?=> Unit
+      content: HtmlFn
   )(using Html): Unit =
     html"""<!doctype html>
       <html lang="en" class="h-full bg-slate-50">

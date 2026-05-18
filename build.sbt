@@ -32,6 +32,7 @@ lazy val samples = (project in file("samples"))
 
 lazy val bench = (project in file("benchmarks"))
   .dependsOn(core)
+  .dependsOn(samples)
   .enablePlugins(JmhPlugin)
   .settings(commonSettings)
   .settings(

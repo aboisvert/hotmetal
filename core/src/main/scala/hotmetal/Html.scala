@@ -88,7 +88,7 @@ object Html:
   val empty: Html = new Html(initialCapacity = 0)
 
   /** Create a new Html context, allowing the nested function to append content into it. */
-  def apply(f: Html ?=> Unit): Html =
+  inline def apply(inline f: HtmlFn): Html =
     val buf = new Html()
     f(using buf)
     buf
@@ -111,7 +111,7 @@ object Html:
   inline def unescaped(chars: CharSequence)(using buf: Html): Unit =
     buf.append(chars)
 
-  def elem(name: String)(attrs: (Html ?=> Unit)*)(nested: Html ?=> Unit = ())(using
+  def elem(name: String)(attrs: HtmlFn*)(nested: HtmlFn = ())(using
       buf: Html
   ): Unit =
     buf.append('<')
@@ -137,7 +137,7 @@ object Html:
     _html.append('"')
 
   /** Append a sequence of attributes into the Html context. */
-  def attrs(attrs: (Html ?=> Unit)*)(using buf: Html): Unit =
+  inline def attrs(inline attrs: HtmlFn*)(using buf: Html): Unit =
     var i = 0
     while i < attrs.length do
       attrs(i).apply(using buf)
@@ -270,7 +270,7 @@ object Html:
       *
       * Syntax { "color" := "red" } is equivalent to { attr("color", "red") }
       */
-    def :=(value: CharSequence)(using _html: Html): Unit =
+    inline def :=(value: CharSequence)(using _html: Html): Unit =
       attr(s, value)
 
   /** Append a sequence of attribute values into the Attrs context.
