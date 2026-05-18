@@ -18,32 +18,22 @@ import java.nio.charset.StandardCharsets.UTF_8
   */
 final class Html(initialCapacity: Int = 256):
   private final val buffer = java.lang.StringBuilder(initialCapacity)
-  private var renderedCache: String | Null = null
 
-  inline def append(chars: CharSequence): Unit =
-    renderedCache = null
+  inline def append(inline chars: CharSequence): Unit =
     buffer.append(chars)
 
   inline def append(c: Char): Unit =
-    renderedCache = null
     buffer.append(c)
 
   def length: Int = buffer.length
 
   def reset(): Unit =
-    renderedCache = null
     buffer.setLength(0)
 
   /** `asCharSequence` is more efficient than `toString` as it doesn't allocate */
   def asCharSequence: CharSequence = buffer
 
-  override def toString: String =
-    val cached = renderedCache
-    if cached != null then cached.nn
-    else
-      val rendered = buffer.toString
-      renderedCache = rendered
-      rendered
+  override def toString: String = buffer.toString
 
   def toInputStream: InputStream =
     if buffer.length == 0 then return new ByteArrayInputStream(Array.empty)
