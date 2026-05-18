@@ -8,17 +8,31 @@ lazy val commonSettings = Seq(
   version := "0.1.0-SNAPSHOT"
 )
 
+lazy val testSettings = Seq(
+  libraryDependencies += "org.scalameta" %% "munit" % "1.2.3" % Test
+)
+
 lazy val root = (project in file("."))
+  .aggregate(LocalProject("samples"), LocalProject("bench"))
   .settings(commonSettings)
+  .settings(testSettings)
   .settings(
     name := "hotmetal",
-    libraryDependencies += "org.scalameta" %% "munit" % "1.2.3" % Test,
     // Tutorial.scala is narrative example code, not an executable MUnit suite.
     Test / unmanagedSources / excludeFilter := (Test / unmanagedSources / excludeFilter).value || "Tutorial.scala"
   )
 
-lazy val bench = (project in file("benchmarks"))
+lazy val samples = (project in file("samples"))
   .dependsOn(root)
+  .settings(commonSettings)
+  .settings(testSettings)
+  .settings(
+    name := "hotmetal-samples",
+    publish / skip := true
+  )
+
+lazy val bench = (project in file("benchmarks"))
+  .dependsOn(samples)
   .enablePlugins(JmhPlugin)
   .settings(commonSettings)
   .settings(

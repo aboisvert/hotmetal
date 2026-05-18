@@ -5,6 +5,7 @@
 .vscode/
 
 benchmarks/results/
+samples/generated-pages/
 
 project/metals.sbt
 project/target/
