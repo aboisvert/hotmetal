@@ -1,8 +1,11 @@
 
 default: package
 
+clean:
+  sbt clean
+
 package:
-  sbt package
+  sbt "core / package"
 
 test:
   sbt test

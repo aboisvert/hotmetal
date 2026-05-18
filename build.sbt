@@ -12,8 +12,7 @@ lazy val testSettings = Seq(
   libraryDependencies += "org.scalameta" %% "munit" % "1.2.3" % Test
 )
 
-lazy val root = (project in file("."))
-  .aggregate(LocalProject("samples"), LocalProject("bench"))
+lazy val core = (project in file("core"))
   .settings(commonSettings)
   .settings(testSettings)
   .settings(
@@ -23,7 +22,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val samples = (project in file("samples"))
-  .dependsOn(root)
+  .dependsOn(core)
   .settings(commonSettings)
   .settings(testSettings)
   .settings(
@@ -32,7 +31,7 @@ lazy val samples = (project in file("samples"))
   )
 
 lazy val bench = (project in file("benchmarks"))
-  .dependsOn(samples)
+  .dependsOn(core)
   .enablePlugins(JmhPlugin)
   .settings(commonSettings)
   .settings(
@@ -40,3 +39,6 @@ lazy val bench = (project in file("benchmarks"))
     publish / skip := true,
     fork := true
   )
+
+lazy val root = (project in file("."))
+  .aggregate(core, samples, bench)
