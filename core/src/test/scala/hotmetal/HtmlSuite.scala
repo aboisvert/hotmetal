@@ -152,6 +152,17 @@ class HtmlSuite extends FunSuite with CompileUtils:
       expected = "<div>foo</div>"
     )
 
+  test("Html.writeInto supports alternate charsets without materializing a String first"):
+    val accent = "\u00e9"
+    val div = Html:
+      html"<div>caf${accent}</div>"
+    val baos = java.io.ByteArrayOutputStream()
+    div.writeInto(baos, StandardCharsets.UTF_16LE)
+    assertEquals(
+      obtained = baos.toString(StandardCharsets.UTF_16LE),
+      expected = s"<div>caf${accent}</div>"
+    )
+
   test("Html.elem"):
     val div = Html:
       elem("div")(
@@ -202,6 +213,11 @@ class HtmlSuite extends FunSuite with CompileUtils:
       obtained = bytes.toSeq,
       expected = """<start><div>1</div><div>2</div><end>""".getBytes(UTF_8).toSeq
     )
+
+  test("HtmlUtils.escapeHtml returns the original String when no escaping is needed"):
+    val clean = "plain-text"
+    val escaped = HtmlUtils.escapeHtml(clean)
+    assert(escaped.eq(clean))
 
   test("Interpolator reports an error on an unapplied def"):
     val foo = () => "foo"

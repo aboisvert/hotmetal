@@ -23,6 +23,9 @@ bench-json:
   mkdir -p benchmarks/results
   sbt "bench / Jmh / run -prof gc -i 10 -wi 5 -r 10s -w 10s -f 1 -t 1 -rf json -rff benchmarks/results/latest.json"
 
+format:
+  sbt "scalafmt"
+
 # install system dependencies using asdf
 install-dependencies:
   #!/bin/bash -e

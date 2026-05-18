@@ -26,7 +26,7 @@ private[hotmetal] object HtmlUtils:
     *   HTML encoded string
     */
   final def escapeHtml(chars: CharSequence, optimize: Boolean = true): CharSequence =
-    if optimize && !containsDangerous(chars) then return chars.toString
+    if optimize && !containsDangerous(chars) then return chars
     val sb = new StringBuilder(chars.length)
     var idx = 0
     while idx < chars.length do

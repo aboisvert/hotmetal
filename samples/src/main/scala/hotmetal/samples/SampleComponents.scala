@@ -557,8 +557,8 @@ object SampleComponents:
     val active = isCurrent(item.href, currentPath)
     html"""
       <a
-        href="${item.href}"
-        data-current="${if active then "true" else "false"}"
+        href="${item.href.u}"
+        data-current="${if active then "true".u else "false".u}"
         class="${attrValues(
         "inline-flex",
         "items-center",
@@ -576,29 +576,34 @@ object SampleComponents:
     html"</a>"
 
   private def footer()(using Html): Unit =
-    html"""
-      <footer class="mt-10 border-t border-slate-200 px-1 py-6">
-    """
-    div(
-      "class" := "flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"
+    elem("footer")(
+      "class" := "mt-10 border-t border-slate-200 px-1 py-6"
     ):
-      html"""<p>Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.</p>"""
-      html"""<nav class="flex flex-wrap items-center gap-4">"""
-      for link <- footerNav do
-        html"""<a href="${link.href}" class="font-medium hover:text-slate-900">${link.label}</a>"""
-      html"""
-        </nav>
-      """
-    html"""
-      </footer>
-    """
+      div(
+        "class" := "flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"
+      ):
+        elem("p"):
+          text("Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.")
+
+        elem("nav")(
+          "class" := "flex flex-wrap items-center gap-4"
+        ):
+          for link <- footerNav do
+            elem("a")(
+              "href" := link.href,
+              "class" := "font-medium hover:text-slate-900"
+            ):
+              unescaped(link.label)
 
   private def fieldLabel(id: String, label: String, required: Boolean)(using
       Html
   ): Unit =
-    html"""<label for="$id" class="block text-sm font-semibold text-slate-900">$label"""
-    if required then html""" <span class="font-medium text-rose-500">*</span>"""
-    html"</label>"
+    elem("label")(
+      "for" := id,
+      "class" := "block text-sm font-semibold text-slate-900"
+    ):
+      text(label)
+      if required then html""" <span class="font-medium text-rose-500">*</span>"""
 
   private def fieldMessages(helpText: Option[String], error: Option[String])(using
       Html

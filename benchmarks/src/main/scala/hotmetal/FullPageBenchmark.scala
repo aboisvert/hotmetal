@@ -19,11 +19,13 @@ import scala.compiletime.uninitialized
 class FullPageState:
   var pages: Array[SamplePage] = uninitialized
   var largestPage: Html = uninitialized
+  var reusableLanding: Html = uninitialized
 
   @Setup(Level.Trial)
   def setup(): Unit =
     pages = SamplePages.all.toArray
     largestPage = SamplePages.landing()
+    reusableLanding = new Html()
 
 class FullPageBenchmark:
   @Benchmark
@@ -41,6 +43,12 @@ class FullPageBenchmark:
   @Benchmark
   def landingToString(): String =
     SamplePages.landing().toString
+
+  @Benchmark
+  def landingToStringWithReuse(state: FullPageState): String =
+    state.reusableLanding.reset()
+    SamplePages.landingInto(using state.reusableLanding)
+    state.reusableLanding.toString
 
   @Benchmark
   def allPagesToString(state: FullPageState, blackhole: Blackhole): Unit =

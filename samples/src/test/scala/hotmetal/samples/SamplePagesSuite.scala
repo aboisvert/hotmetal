@@ -3,12 +3,14 @@ package hotmetal.samples
 import hotmetal.Html
 import munit.FunSuite
 
+import SampleComponents.*
+
 class SamplePagesSuite extends FunSuite:
   import hotmetal.Html.*
 
   test("div helper matches elem div output"):
     val rendered = Html:
-      SampleComponents.div(
+      div(
         "class" := "grid gap-4",
         "id" := "demo"
       ):
@@ -21,7 +23,7 @@ class SamplePagesSuite extends FunSuite:
 
   test("top navigation highlights the current page from shared nav data"):
     val rendered = Html:
-      SampleComponents.topNav(
+      topNav(
         Seq(
           NavItem("Dashboard", "/dashboard"),
           NavItem("Settings", "/settings"),
@@ -31,17 +33,17 @@ class SamplePagesSuite extends FunSuite:
       )
 
     assertEquals(count(rendered.toString, "data-current=\"true\""), 2)
-    assert(rendered.toString.contains("href=\"&#47;settings\""))
+    assert(rendered.toString.contains("href=\"/settings\""))
 
   test("flashMessages renders nothing for empty state"):
     val rendered = Html:
-      SampleComponents.flashMessages(Nil)
+      flashMessages(Nil)
 
     assertEquals(rendered.toString, "")
 
   test("text fields escape labels values and error messages"):
     val rendered = Html:
-      SampleComponents.textField(
+      textField(
         TextField(
           id = "owner",
           name = "owner",
@@ -58,7 +60,7 @@ class SamplePagesSuite extends FunSuite:
 
   test("tables escape generated row data"):
     val rendered = Html:
-      SampleComponents.dataTable(
+      dataTable(
         columns = Seq(
           TableColumn("Name"),
           TableColumn("Owner"),

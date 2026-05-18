@@ -2,6 +2,7 @@ package hotmetal.samples
 
 import hotmetal.Html
 import hotmetal.Html.*
+import SampleComponents.*
 
 object SamplePages:
   private val primaryNav = Seq(
@@ -122,30 +123,30 @@ object SamplePages:
 
   def dashboard(): Html =
     Html:
-      SampleComponents.baseLayout(
+      baseLayout(
         title = "Operations dashboard",
         currentPath = "/dashboard",
         navItems = primaryNav,
         flashes = dashboardFlashes
       ):
         html"""<main class="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">"""
-        SampleComponents.sideBar(workspaceNav, "/dashboard")
-        SampleComponents.div("class" := "grid gap-6"):
-          SampleComponents.metricCards(dashboardMetrics)
+        sideBar(workspaceNav, "/dashboard")
+        div("class" := "grid gap-6"):
+          metricCards(dashboardMetrics)
           html"""<section class="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">"""
-          SampleComponents.div("class" := "space-y-4"):
-            SampleComponents.div("class" := "flex items-center justify-between"):
-              SampleComponents.div():
+          div("class" := "space-y-4"):
+            div("class" := "flex items-center justify-between"):
+              div():
                 html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Customer activity</p>"""
                 html"""<h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Live operations snapshot</h1>"""
               html"""<button class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">Create campaign</button>"""
-            SampleComponents.dataTable(activityColumns, activityRows)
+            dataTable(activityColumns, activityRows)
           html"""
             <aside class="grid gap-4">
               <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" x-data="{ expanded: false }">
           """
-          SampleComponents.div("class" := "flex items-center justify-between"):
-            SampleComponents.div():
+          div("class" := "flex items-center justify-between"):
+            div():
               html"""<p class="text-sm text-slate-500">Owner notes</p>"""
               html"""<p class="mt-1 text-lg font-semibold text-slate-900">Weekly launch review</p>"""
             html"""
@@ -185,14 +186,14 @@ object SamplePages:
 
   def checkout(): Html =
     Html:
-      SampleComponents.baseLayout(
+      baseLayout(
         title = "Checkout workspace",
         currentPath = "/checkout",
         navItems = primaryNav,
         flashes = checkoutFlashes
       ):
         html"""<main class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_420px]" x-data="{ promoOpen: false, quantity: 3 }"><section class="space-y-6">"""
-        SampleComponents.div():
+        div():
           html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Checkout</p>"""
           html"""<h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Compose a realistic purchase flow</h1>"""
           html"""
@@ -200,10 +201,10 @@ object SamplePages:
               This sample uses shared field components, repeated product cards, and Alpine controls for promo visibility and quantity previews.
             </p>
           """
-        SampleComponents.productList(checkoutProducts)
+        productList(checkoutProducts)
         html"""<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">"""
-        SampleComponents.div("class" := "grid gap-5 md:grid-cols-2"):
-          SampleComponents.textField(
+        div("class" := "grid gap-5 md:grid-cols-2"):
+          textField(
             TextField(
               id = "shipping-name",
               name = "shippingName",
@@ -214,7 +215,7 @@ object SamplePages:
               required = true
             )
           )
-          SampleComponents.textField(
+          textField(
             TextField(
               id = "shipping-email",
               name = "shippingEmail",
@@ -225,7 +226,7 @@ object SamplePages:
               required = true
             )
           )
-          SampleComponents.textField(
+          textField(
             TextField(
               id = "address",
               name = "address",
@@ -235,7 +236,7 @@ object SamplePages:
               required = true
             )
           )
-          SampleComponents.selectField(
+          selectField(
             SelectField(
               id = "country",
               name = "country",
@@ -249,7 +250,7 @@ object SamplePages:
               helpText = Some("Select menus are also rendered through a reusable component.")
             )
           )
-        SampleComponents.checkboxField(
+        checkboxField(
           CheckboxField(
             id = "billing-same",
             name = "billingSame",
@@ -258,7 +259,7 @@ object SamplePages:
             helpText = Some("Useful for demonstrating repeated conditional field groups.")
           )
         )
-        SampleComponents.radioGroup(
+        radioGroup(
           RadioGroup(
             name = "deliverySpeed",
             label = "Delivery speed",
@@ -272,8 +273,8 @@ object SamplePages:
           )
         )
         html"""</section></section><aside class="space-y-6"><section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">"""
-        SampleComponents.div("class" := "flex items-center justify-between"):
-          SampleComponents.div():
+        div("class" := "flex items-center justify-between"):
+          div():
             html"""<p class="text-sm font-semibold text-slate-500">Order total</p>"""
             html"""<p class="mt-1 text-3xl font-black tracking-tight text-slate-900">${"$537"}</p>"""
           html"""
@@ -286,7 +287,7 @@ object SamplePages:
             </button>
           """
         html"""<div x-show="promoOpen" x-transition class="mt-4 grid gap-3">"""
-        SampleComponents.textField(
+        textField(
           TextField(
             id = "promo",
             name = "promo",
@@ -296,9 +297,9 @@ object SamplePages:
           )
         )
         html"""<button type="button" class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white">Apply code</button></div>"""
-        SampleComponents.div("class" := "mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"):
+        div("class" := "mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"):
           html"""<p>Package count preview: <span class="font-semibold text-slate-900" x-text="quantity"></span></p>"""
-          SampleComponents.div("class" := "mt-3 flex items-center gap-3"):
+          div("class" := "mt-3 flex items-center gap-3"):
             html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = Math.max(1, quantity - 1)">-</button>"""
             html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = quantity + 1">+</button>"""
             html"""<span class="text-xs uppercase tracking-[0.2em] text-slate-400">Static Alpine demo</span>"""
@@ -306,7 +307,7 @@ object SamplePages:
 
   def settings(): Html =
     Html:
-      SampleComponents.baseLayout(
+      baseLayout(
         title = "Account settings",
         currentPath = "/settings",
         navItems = primaryNav,
@@ -315,7 +316,7 @@ object SamplePages:
         html"""
           <main class="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]" x-data="{ tab: 'profile' }">
         """
-        SampleComponents.sideBar(
+        sideBar(
           Seq(
             NavItem("Profile", "#/settings"),
             NavItem("Notifications", "#/settings/notifications"),
@@ -324,7 +325,7 @@ object SamplePages:
           "/settings"
         )
         html"""<section class="space-y-6">"""
-        SampleComponents.div("class" := "flex flex-wrap gap-3"):
+        div("class" := "flex flex-wrap gap-3"):
           html"""
             <button
               type="button"
@@ -344,15 +345,15 @@ object SamplePages:
             </button>
           """
         html"""<section x-show="tab === 'profile'" x-transition class="grid gap-6">"""
-        SampleComponents.div("class" := "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
+        div("class" := "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
           html"""
             <h1 class="text-3xl font-black tracking-tight text-slate-900">Reusable settings form</h1>
             <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
               The settings page demonstrates macros for fields, checkboxes, radio groups, flash messages, and conditional tab content.
             </p>
           """
-          SampleComponents.div("class" := "mt-6 grid gap-5 md:grid-cols-2"):
-            SampleComponents.textField(
+          div("class" := "mt-6 grid gap-5 md:grid-cols-2"):
+            textField(
               TextField(
                 id = "display-name",
                 name = "displayName",
@@ -361,7 +362,7 @@ object SamplePages:
                 required = true
               )
             )
-            SampleComponents.textField(
+            textField(
               TextField(
                 id = "job-title",
                 name = "jobTitle",
@@ -369,7 +370,7 @@ object SamplePages:
                 value = "Staff Developer Advocate"
               )
             )
-            SampleComponents.textField(
+            textField(
               TextField(
                 id = "webhook-secret",
                 name = "webhookSecret",
@@ -378,7 +379,7 @@ object SamplePages:
                 error = Some("Unsafe sample text should render escaped in the generated HTML.")
               )
             )
-            SampleComponents.selectField(
+            selectField(
               SelectField(
                 id = "timezone",
                 name = "timezone",
@@ -391,7 +392,7 @@ object SamplePages:
                 )
               )
             )
-          SampleComponents.checkboxField(
+          checkboxField(
             CheckboxField(
               id = "marketing-updates",
               name = "marketingUpdates",
@@ -400,7 +401,7 @@ object SamplePages:
               helpText = Some("A simple checkbox rendered via a shared helper.")
             )
           )
-          SampleComponents.radioGroup(
+          radioGroup(
             RadioGroup(
               name = "incidentUpdates",
               label = "Incident alerts",
@@ -413,7 +414,7 @@ object SamplePages:
             )
           )
         html"""</section><section x-show="tab === 'preferences'" x-transition class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="text-2xl font-bold text-slate-900">Notification preview</h2>"""
-        SampleComponents.div("class" := "mt-5 grid gap-4 md:grid-cols-2"):
+        div("class" := "mt-5 grid gap-4 md:grid-cols-2"):
           for message <- Seq(
             "Weekly digest with performance summaries",
             "Billing notices for failed cards",
@@ -427,95 +428,98 @@ object SamplePages:
             """
         html"""</section></section></main>"""
 
+  def landingInto(using Html): Unit =
+    baseLayout(
+      title = "Launch with Hotmetal",
+      currentPath = "/landing",
+      navItems = primaryNav,
+      flashes = landingFlashes
+    ):
+      html"""<main class="grid gap-8"><section class="grid gap-8 rounded-[2rem] bg-slate-900 px-8 py-10 text-white lg:grid-cols-[minmax(0,1.2fr)_420px]" x-data="{ modalOpen: false }">"""
+      div():
+        html"""<p class="text-sm font-semibold uppercase tracking-[0.3em] text-brand-200">Static pages that still feel alive</p>"""
+        html"""<h1 class="mt-4 text-5xl font-black tracking-tight">Port realistic Tailwind and Alpine page patterns into Hotmetal.</h1>"""
+        html"""
+          <p class="mt-5 max-w-2xl text-base leading-7 text-slate-300">
+            The landing page showcases shared layout components, repeated pricing cards, FAQ accordions, generated banners, and a small modal interaction.
+          </p>
+        """
+        div("class" := "mt-8 flex flex-wrap gap-3"):
+          html"""<button type="button" class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900" @click="modalOpen = true">Preview launch modal</button>"""
+          html"""<a href="#pricing" class="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white">View pricing</a>"""
+      div("class" := "rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl"):
+        html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Why it matters</p>"""
+        div("class" := "mt-4 grid gap-4"):
+          for bullet <- Seq(
+            "Child pages extend a shared base layout.",
+            "Navigation and alerts render from shared Scala data.",
+            "Forms, lists, and cards exercise loops and reusable fragments."
+          ) do
+            div("class" := "rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"):
+              html"$bullet"
+      html"""
+        <div
+          x-show="modalOpen"
+          x-transition
+          class="fixed inset-0 z-30 flex items-center justify-center bg-slate-950/70 px-4"
+        >
+          <div class="w-full max-w-lg rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl" @click.outside="modalOpen = false">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Launch checklist</p>
+            <h2 class="mt-3 text-2xl font-bold">Ship generated pages with confidence</h2>
+            <p class="mt-3 text-sm leading-6 text-slate-600">
+              Benchmarks can measure rendering, while the exported sample pages make the output easy to review in a browser.
+            </p>
+            <button type="button" class="mt-6 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white" @click="modalOpen = false">
+              Close
+            </button>
+          </div>
+        </div>
+      </section>
+      <section id="pricing" class="grid gap-4">
+      """
+      div():
+        html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Pricing cards</p>"""
+        html"""<h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Generated through reusable data-driven components</h2>"""
+      pricingGrid(pricingTiers)
+      html"""</section><section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">"""
+      div("class" := "space-y-4"):
+        html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Frequently asked questions</p>"""
+        html"""<h2 class="text-3xl font-black tracking-tight text-slate-900">FAQ accordions with Alpine.js</h2>"""
+        faqAccordion(faqItems)
+      html"""<aside class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h3 class="text-2xl font-bold text-slate-900">Join the demo newsletter</h3><p class="mt-3 text-sm leading-6 text-slate-600">This sidebar uses the same field macros as the checkout and settings pages.</p>"""
+      div("class" := "mt-5 grid gap-4"):
+        textField(
+          TextField(
+            id = "newsletter-name",
+            name = "newsletterName",
+            label = "Your name",
+            value = "Morgan Example"
+          )
+        )
+        textField(
+          TextField(
+            id = "newsletter-email",
+            name = "newsletterEmail",
+            label = "Email address",
+            inputType = "email",
+            value = "morgan@example.com",
+            required = true
+          )
+        )
+        checkboxField(
+          CheckboxField(
+            id = "newsletter-opt-in",
+            name = "newsletterOptIn",
+            label = "Email me product updates and benchmark news",
+            checked = true
+          )
+        )
+        html"""<button type="button" class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">Subscribe</button>"""
+      html"""</aside></section></main>"""
+
   def landing(): Html =
     Html:
-      SampleComponents.baseLayout(
-        title = "Launch with Hotmetal",
-        currentPath = "/landing",
-        navItems = primaryNav,
-        flashes = landingFlashes
-      ):
-        html"""<main class="grid gap-8"><section class="grid gap-8 rounded-[2rem] bg-slate-900 px-8 py-10 text-white lg:grid-cols-[minmax(0,1.2fr)_420px]" x-data="{ modalOpen: false }">"""
-        SampleComponents.div():
-          html"""<p class="text-sm font-semibold uppercase tracking-[0.3em] text-brand-200">Static pages that still feel alive</p>"""
-          html"""<h1 class="mt-4 text-5xl font-black tracking-tight">Port realistic Tailwind and Alpine page patterns into Hotmetal.</h1>"""
-          html"""
-            <p class="mt-5 max-w-2xl text-base leading-7 text-slate-300">
-              The landing page showcases shared layout components, repeated pricing cards, FAQ accordions, generated banners, and a small modal interaction.
-            </p>
-          """
-          SampleComponents.div("class" := "mt-8 flex flex-wrap gap-3"):
-            html"""<button type="button" class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900" @click="modalOpen = true">Preview launch modal</button>"""
-            html"""<a href="#pricing" class="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white">View pricing</a>"""
-        SampleComponents.div("class" := "rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl"):
-          html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Why it matters</p>"""
-          SampleComponents.div("class" := "mt-4 grid gap-4"):
-            for bullet <- Seq(
-              "Child pages extend a shared base layout.",
-              "Navigation and alerts render from shared Scala data.",
-              "Forms, lists, and cards exercise loops and reusable fragments."
-            ) do
-              SampleComponents.div("class" := "rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"):
-                html"$bullet"
-        html"""
-          <div
-            x-show="modalOpen"
-            x-transition
-            class="fixed inset-0 z-30 flex items-center justify-center bg-slate-950/70 px-4"
-          >
-            <div class="w-full max-w-lg rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl" @click.outside="modalOpen = false">
-              <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Launch checklist</p>
-              <h2 class="mt-3 text-2xl font-bold">Ship generated pages with confidence</h2>
-              <p class="mt-3 text-sm leading-6 text-slate-600">
-                Benchmarks can measure rendering, while the exported sample pages make the output easy to review in a browser.
-              </p>
-              <button type="button" class="mt-6 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white" @click="modalOpen = false">
-                Close
-              </button>
-            </div>
-          </div>
-        </section>
-        <section id="pricing" class="grid gap-4">
-        """
-        SampleComponents.div():
-          html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Pricing cards</p>"""
-          html"""<h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Generated through reusable data-driven components</h2>"""
-        SampleComponents.pricingGrid(pricingTiers)
-        html"""</section><section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">"""
-        SampleComponents.div("class" := "space-y-4"):
-          html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Frequently asked questions</p>"""
-          html"""<h2 class="text-3xl font-black tracking-tight text-slate-900">FAQ accordions with Alpine.js</h2>"""
-          SampleComponents.faqAccordion(faqItems)
-        html"""<aside class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h3 class="text-2xl font-bold text-slate-900">Join the demo newsletter</h3><p class="mt-3 text-sm leading-6 text-slate-600">This sidebar uses the same field macros as the checkout and settings pages.</p>"""
-        SampleComponents.div("class" := "mt-5 grid gap-4"):
-          SampleComponents.textField(
-            TextField(
-              id = "newsletter-name",
-              name = "newsletterName",
-              label = "Your name",
-              value = "Morgan Example"
-            )
-          )
-          SampleComponents.textField(
-            TextField(
-              id = "newsletter-email",
-              name = "newsletterEmail",
-              label = "Email address",
-              inputType = "email",
-              value = "morgan@example.com",
-              required = true
-            )
-          )
-          SampleComponents.checkboxField(
-            CheckboxField(
-              id = "newsletter-opt-in",
-              name = "newsletterOptIn",
-              label = "Email me product updates and benchmark news",
-              checked = true
-            )
-          )
-          html"""<button type="button" class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">Subscribe</button>"""
-        html"""</aside></section></main>"""
+      landingInto
 
   def all: Seq[SamplePage] =
     Seq(

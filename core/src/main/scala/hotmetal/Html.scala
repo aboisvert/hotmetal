@@ -3,7 +3,10 @@ package hotmetal
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
 import java.nio.charset.Charset
+import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 import java.nio.charset.StandardCharsets.UTF_8
 
@@ -25,8 +28,15 @@ final class Html(initialCapacity: Int = 256):
   inline def append(c: Char): Unit =
     buffer.append(c)
 
+  inline def append(i: Int): Unit =
+    buffer.append(i)
+
+  inline def append(l: Long): Unit =
+    buffer.append(l)
+
   def length: Int = buffer.length
 
+  /** Clear the current buffer so this instance can be reused for another render. */
   def reset(): Unit =
     buffer.setLength(0)
 
@@ -36,18 +46,19 @@ final class Html(initialCapacity: Int = 256):
   override def toString: String = buffer.toString
 
   def toInputStream: InputStream =
-    if buffer.length == 0 then return new ByteArrayInputStream(Array.empty)
-    val bytes = toString.getBytes(UTF_8)
+    if buffer.length == 0 then return new ByteArrayInputStream(Array.emptyByteArray)
+    val bytes = Html.encodeBytes(buffer, UTF_8)
     new ByteArrayInputStream(bytes, 0, bytes.length)
 
   def writeInto(out: OutputStream, charset: Charset = StandardCharsets.UTF_8): Unit =
     if buffer.length == 0 then return
-    val bytes = toString.getBytes(charset)
-    out.write(bytes, 0, bytes.length)
+    Html.writeEncoded(buffer, out, charset)
 
 end Html // class
 
 object Html:
+  private final val EncodeBufferChars = 2048
+
   /** Shorthand for functions generating Html content. */
   type HtmlFn = Html ?=> Unit
 
@@ -76,6 +87,38 @@ object Html:
   // given [T, U]: HtmlArg[Function[T, U]] = HtmlArg.NotAllowed()
 
   val empty: Html = new Html(initialCapacity = 0)
+
+  private def encodeBytes(chars: CharSequence, charset: Charset): Array[Byte] =
+    val out = java.io.ByteArrayOutputStream(chars.length)
+    writeEncoded(chars, out, charset)
+    out.toByteArray
+
+  private def writeEncoded(chars: CharSequence, out: OutputStream, charset: Charset): Unit =
+    val encoder = charset
+      .newEncoder()
+      .onMalformedInput(CodingErrorAction.REPLACE)
+      .onUnmappableCharacter(CodingErrorAction.REPLACE)
+    val input = CharBuffer.wrap(chars)
+    val output = ByteBuffer.allocate(math.max(EncodeBufferChars, (encoder.maxBytesPerChar() * EncodeBufferChars).toInt))
+
+    var finishedEncoding = false
+    while !finishedEncoding do
+      val result = encoder.encode(input, output, true)
+      flushEncodedBytes(output, out)
+      if result.isUnderflow then finishedEncoding = true
+      else if !result.isOverflow then result.throwException()
+
+    var finishedFlushing = false
+    while !finishedFlushing do
+      val result = encoder.flush(output)
+      flushEncodedBytes(output, out)
+      if result.isUnderflow then finishedFlushing = true
+      else if !result.isOverflow then result.throwException()
+
+  private def flushEncodedBytes(buffer: ByteBuffer, out: OutputStream): Unit =
+    val size = buffer.position()
+    if size > 0 then out.write(buffer.array(), 0, size)
+    buffer.clear()
 
   /** Create a new Html context, allowing the nested function to append content into it. */
   inline def apply(inline f: HtmlFn): Html =
@@ -178,9 +221,10 @@ object Html:
                 '{ ${ htmlExpr }.append(${ HtmlExpr }.escape(${ term.asExprOf[Char] }.toString)) }
               case value: Unit =>
                 '{}
-              case value: (java.lang.Integer | java.lang.Long) =>
-                // other literals like Int, Long, etc. don't need to be escaped
-                '{ ${ htmlExpr }.append(${ HtmlExpr }.escape(${ term.asExpr }.toString)) }
+              case value: java.lang.Integer =>
+                '{ ${ htmlExpr }.append(${ Expr(value.intValue) }) }
+              case value: java.lang.Long =>
+                '{ ${ htmlExpr }.append(${ Expr(value.longValue) }) }
               case otherValue =>
                 report.errorAndAbort(
                   s"${otherValue.getClass.getName} literals are intentionally not supported.  Use .toString if you insist.",
@@ -202,8 +246,10 @@ object Html:
               '{ ${ htmlExpr }.append(${ HtmlExpr }.escape(${ term.asExprOf[CharSequence] })) }
             else if term.tpe <:< StringTpe then
               '{ ${ htmlExpr }.append(${ HtmlExpr }.escape(${ term.asExprOf[String] })) }
-            else if term.tpe <:< IntTpe || term.tpe <:< LongTpe then
-              '{ ${ htmlExpr }.append(${ term.asExpr }.toString) }
+            else if term.tpe <:< IntTpe then
+              '{ ${ htmlExpr }.append(${ term.asExprOf[Int] }) }
+            else if term.tpe <:< LongTpe then
+              '{ ${ htmlExpr }.append(${ term.asExprOf[Long] }) }
             // support nested Html fragments
             else if term.tpe <:< HtmlTpe then
               '{ ${ htmlExpr }.append(${ term.asExprOf[Html] }.asCharSequence) }
