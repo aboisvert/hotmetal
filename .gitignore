@@ -1,0 +1,8 @@
+.bsp
+.cursor/
+.metals/
+.scala-build/
+.vscode/
+
+project/target/
+target/
