@@ -16,32 +16,43 @@ import java.nio.charset.StandardCharsets.UTF_8
   * The Html context is typically created at the root of a Html document, or is instantiated for
   * standalone Html fragments that are cached and composed into larger documents.
   */
-final class Html(initialCapacity: Int = 4 * 1024):
-  private final val buffer = StringBuffer(initialCapacity)
+final class Html(initialCapacity: Int = 256):
+  private final val buffer = java.lang.StringBuilder(initialCapacity)
+  private var renderedCache: String | Null = null
 
-  inline def append(chars: CharSequence): Unit = buffer.append(chars)
+  inline def append(chars: CharSequence): Unit =
+    renderedCache = null
+    buffer.append(chars)
 
-  inline def append(c: Char): Unit = buffer.append(c)
+  inline def append(c: Char): Unit =
+    renderedCache = null
+    buffer.append(c)
 
   def length: Int = buffer.length
 
-  def reset(): Unit = buffer.setLength(0)
+  def reset(): Unit =
+    renderedCache = null
+    buffer.setLength(0)
 
   /** `asCharSequence` is more efficient than `toString` as it doesn't allocate */
   def asCharSequence: CharSequence = buffer
 
   override def toString: String =
-    // FYI - as an implementation detail, StringBuilder.toString maintains a cache of the last `toString` result
-    buffer.toString
+    val cached = renderedCache
+    if cached != null then cached.nn
+    else
+      val rendered = buffer.toString
+      renderedCache = rendered
+      rendered
 
   def toInputStream: InputStream =
     if buffer.length == 0 then return new ByteArrayInputStream(Array.empty)
-    val bytes = buffer.toString.getBytes(UTF_8)
+    val bytes = toString.getBytes(UTF_8)
     new ByteArrayInputStream(bytes, 0, bytes.length)
 
   def writeInto(out: OutputStream, charset: Charset = StandardCharsets.UTF_8): Unit =
     if buffer.length == 0 then return
-    val bytes = buffer.toString.getBytes(charset)
+    val bytes = toString.getBytes(charset)
     out.write(bytes, 0, bytes.length)
 
 end Html // class

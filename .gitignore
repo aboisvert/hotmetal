@@ -4,5 +4,10 @@
 .scala-build/
 .vscode/
 
+benchmarks/results/
+
+project/metals.sbt
 project/target/
+project/project/
+
 target/
