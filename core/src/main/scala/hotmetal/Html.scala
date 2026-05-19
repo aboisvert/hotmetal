@@ -76,7 +76,7 @@ final class Html(initialCapacity: Int = 256):
     append(' ')
     append(name)
 
-  @nowarn // html.foeach giving bogus warning
+  @nowarn("msg=Discarded non-Unit value.*")
   inline def foreach(inline attrs: HtmlFn*)(using Html): Unit =
     var i = 0
     while i < attrs.length do

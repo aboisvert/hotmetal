@@ -22,7 +22,7 @@ object HtmlElements:
     * @example
     *   head(): meta("charset" := "utf-8") title(): text("My Page")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def head(id: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<head")
     html.foreach(attrs)
@@ -39,7 +39,7 @@ object HtmlElements:
     * @example
     *   title: text("Dashboard")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def title(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<title")
     html.attrNotNull("id", id)
@@ -58,7 +58,7 @@ object HtmlElements:
     * @example
     *   meta("charset" := "utf-8") meta("name" := "viewport", "content" := "width=device-width, initial-scale=1")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def meta(charset: String = null, name: String = null, content: String = null, attrs: HtmlFn*)(using
       html: Html
   ): Unit =
@@ -78,7 +78,7 @@ object HtmlElements:
     * @example
     *   link("rel" := "stylesheet", "href" := "/app.css")
     */
-  @nowarn // html.foeach giving bogus warning
+  @nowarn("msg=Discarded non-Unit value.*")
   def link(
       rel: String = null,
       href: String = null,
@@ -109,7 +109,7 @@ object HtmlElements:
     * @example
     *   style: html""" .card { padding: 1rem; } """
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def style(
       media: String = null,
       `type`: String = null,
@@ -136,7 +136,7 @@ object HtmlElements:
     * @example
     *   script(defer = true, src = "/app.js")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def script(defer: Boolean, src: String, attrs: HtmlFn*)(using html: Html): Unit =
     html.append("<script")
     if defer then html.attrNoValue("defer")
@@ -152,7 +152,7 @@ object HtmlElements:
     * @example
     *   script("console.log('Hello, world!');")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def script(nested: String)(using html: Html): Unit =
     html.append("<script>\n")
     html.append(nested)
@@ -167,7 +167,7 @@ object HtmlElements:
     * @example
     *   noscript: p: text("Please enable JavaScript.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def noscript(nested: HtmlFn)(using html: Html): Unit =
     html.append("<noscript>\n")
     nested.apply
@@ -182,7 +182,7 @@ object HtmlElements:
     * @example
     *   base("href" := "https://example.com/")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def base(href: String = null, target: String = null, attrs: HtmlFn*)(using html: Html): Unit =
     html.append("<base")
     html.attrNotNull("href", href)
@@ -199,7 +199,7 @@ object HtmlElements:
     * @example
     *   body("class" := "min-h-screen"): main: text("Hello")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def body(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<body")
     html.attrNotNull("id", id)
@@ -218,7 +218,7 @@ object HtmlElements:
     * @example
     *   header("class" := "site-header"): h1: text("Hotmetal")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def header(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<header")
     html.attrNotNull("id", id)
@@ -237,7 +237,7 @@ object HtmlElements:
     * @example
     *   nav("aria-label" := "Main"): a("href" := "/"): text("Home")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def nav(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<nav")
     html.attrNotNull("id", id)
@@ -256,7 +256,7 @@ object HtmlElements:
     * @example
     *   main("id" := "content"): p: text("Primary page content.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def main(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<main")
     html.attrNotNull("id", id)
@@ -275,7 +275,7 @@ object HtmlElements:
     * @example
     *   section("id" := "features"): h2: text("Features")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def section(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<section")
     html.attrNotNull("id", id)
@@ -294,7 +294,7 @@ object HtmlElements:
     * @example
     *   article("class" := "post"): h2: text("Release notes")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def article(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<article")
     html.attrNotNull("id", id)
@@ -313,7 +313,7 @@ object HtmlElements:
     * @example
     *   aside("class" := "sidebar"): nav: text("Related links")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def aside(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<aside")
     html.attrNotNull("id", id)
@@ -332,7 +332,7 @@ object HtmlElements:
     * @example
     *   footer("class" := "site-footer"): p: text("© 2026 Example")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def footer(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<footer")
     html.attrNotNull("id", id)
@@ -351,7 +351,7 @@ object HtmlElements:
     * @example
     *   address: text("Contact us at support@example.com")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def address(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<address")
     html.attrNotNull("id", id)
@@ -370,7 +370,7 @@ object HtmlElements:
     * @example
     *   h1("id" := "page-title"): text("Welcome")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h1(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h1")
     html.attrNotNull("id", id)
@@ -389,7 +389,7 @@ object HtmlElements:
     * @example
     *   h2: text("Overview")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h2(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h2")
     html.attrNotNull("id", id)
@@ -408,7 +408,7 @@ object HtmlElements:
     * @example
     *   h3: text("Details")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h3(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h3")
     html.attrNotNull("id", id)
@@ -427,7 +427,7 @@ object HtmlElements:
     * @example
     *   h4: text("Subsection")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h4(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h4")
     html.attrNotNull("id", id)
@@ -446,7 +446,7 @@ object HtmlElements:
     * @example
     *   h5: text("Note")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h5(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h5")
     html.attrNotNull("id", id)
@@ -465,7 +465,7 @@ object HtmlElements:
     * @example
     *   h6: text("Fine print")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def h6(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<h6")
     html.attrNotNull("id", id)
@@ -484,7 +484,7 @@ object HtmlElements:
     * @example
     *   p("class" := "lead"): text("A short introduction.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def p(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<p")
     html.attrNotNull("id", id)
@@ -503,7 +503,7 @@ object HtmlElements:
     * @example
     *   a(id = "docs-link", `class` = "link", href = "/docs"): text("Documentation")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def a(
       id: String = null,
       `class`: String = null,
@@ -532,7 +532,7 @@ object HtmlElements:
     * @example
     *   span("class" := "badge"): text("New")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def span(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<span")
     html.attrNotNull("id", id)
@@ -551,7 +551,7 @@ object HtmlElements:
     * @example
     *   div(`class` = "card"): p: text("Card body")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def div(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<div")
     html.attrNotNull("id", id)
@@ -582,7 +582,7 @@ object HtmlElements:
     * @example
     *   section: p: text("Part one") hr() p: text("Part two")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def hr()(using html: Html): Unit =
     html.append("<hr/>")
 
@@ -595,7 +595,7 @@ object HtmlElements:
     * @example
     *   p: text("Please ") strong: text("save") text(" your work.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def strong(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<strong")
     html.attrNotNull("id", id)
@@ -614,7 +614,7 @@ object HtmlElements:
     * @example
     *   p: text("This is ") em: text("important") text(".")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def em(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<em")
     html.attrNotNull("id", id)
@@ -633,7 +633,7 @@ object HtmlElements:
     * @example
     *   p: b: text("Bold") text(" label")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def b(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<b")
     html.attrNotNull("id", id)
@@ -652,7 +652,7 @@ object HtmlElements:
     * @example
     *   p: i: text("italic") text(" styling")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def i(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<i")
     html.attrNotNull("id", id)
@@ -671,7 +671,7 @@ object HtmlElements:
     * @example
     *   p: u: text("annotated")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def u(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<u")
     html.attrNotNull("id", id)
@@ -690,7 +690,7 @@ object HtmlElements:
     * @example
     *   small: text("Prices may vary.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def small(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<small")
     html.attrNotNull("id", id)
@@ -709,7 +709,7 @@ object HtmlElements:
     * @example
     *   p: text("Find the ") mark: text("keyword") text(" here.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def mark(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<mark")
     html.attrNotNull("id", id)
@@ -728,7 +728,7 @@ object HtmlElements:
     * @example
     *   p: text("H") sub: text("2") text("O")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def sub(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<sub")
     html.attrNotNull("id", id)
@@ -747,7 +747,7 @@ object HtmlElements:
     * @example
     *   p: text("x") sup: text("2")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def sup(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<sup")
     html.attrNotNull("id", id)
@@ -766,7 +766,7 @@ object HtmlElements:
     * @example
     *   p: text("Use ") code: text("Html.text") text(" for escaping.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def code(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<code")
     html.attrNotNull("id", id)
@@ -785,7 +785,7 @@ object HtmlElements:
     * @example
     *   pre: code: text("val x = 1")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def pre(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<pre")
     html.attrNotNull("id", id)
@@ -804,7 +804,7 @@ object HtmlElements:
     * @example
     *   p: text("Press ") kbd: text("Ctrl") text("+") kbd: text("S") text(" to save.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def kbd(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<kbd")
     html.attrNotNull("id", id)
@@ -823,7 +823,7 @@ object HtmlElements:
     * @example
     *   p: text("Output: ") samp: text("OK")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def samp(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<samp")
     html.attrNotNull("id", id)
@@ -842,7 +842,7 @@ object HtmlElements:
     * @example
     *   p: text("Let ") `var`: text("n") text(" be the count.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def `var`(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<var")
     html.attrNotNull("id", id)
@@ -861,7 +861,7 @@ object HtmlElements:
     * @example
     *   blockquote("cite" := "https://example.com"): p: text("A quoted passage.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def blockquote(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<blockquote")
     html.attrNotNull("id", id)
@@ -880,7 +880,7 @@ object HtmlElements:
     * @example
     *   p: text("As they said, ") q("cite" := "https://example.com"): text("hello") text(".")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def q(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<q")
     html.attrNotNull("id", id)
@@ -899,7 +899,7 @@ object HtmlElements:
     * @example
     *   p: cite: text("The Pragmatic Programmer")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def cite(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<cite")
     html.attrNotNull("id", id)
@@ -918,7 +918,7 @@ object HtmlElements:
     * @example
     *   abbr("title" := "HyperText Markup Language"): text("HTML")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def abbr(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<abbr")
     html.attrNotNull("id", id)
@@ -937,7 +937,7 @@ object HtmlElements:
     * @example
     *   time("datetime" := "2026-05-18"): text("May 18, 2026")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def time(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<time")
     html.attrNotNull("id", id)
@@ -956,7 +956,7 @@ object HtmlElements:
     * @example
     *   img("src" := "/logo.svg", "alt" := "Logo")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def img(
       id: String = null,
       `class`: String = null,
@@ -996,7 +996,7 @@ object HtmlElements:
     *   picture: source("media" := "(min-width: 800px)", "srcset" := "large.jpg") img("src" := "small.jpg", "alt" :=
     *   "Hero")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def picture(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<picture")
     html.attrNotNull("id", id)
@@ -1015,7 +1015,7 @@ object HtmlElements:
     * @example
     *   source("src" := "clip.webm", "type" := "video/webm")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def source(
       id: String = null,
       `class`: String = null,
@@ -1046,7 +1046,7 @@ object HtmlElements:
     * @example
     *   figure: img("src" := "/chart.png", "alt" := "Chart") figcaption: text("Quarterly growth")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def figure(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<figure")
     html.attrNotNull("id", id)
@@ -1065,7 +1065,7 @@ object HtmlElements:
     * @example
     *   figcaption: text("Figure 1: Architecture")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def figcaption(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<figcaption")
     html.attrNotNull("id", id)
@@ -1084,7 +1084,7 @@ object HtmlElements:
     * @example
     *   audio("controls" := "controls"): source("src" := "/sound.mp3", "type" := "audio/mpeg")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def audio(
       id: String = null,
       `class`: String = null,
@@ -1122,7 +1122,7 @@ object HtmlElements:
     * @example
     *   video("controls" := "controls", "width" := "640"): source("src" := "/clip.mp4", "type" := "video/mp4")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def video(
       id: String = null,
       `class`: String = null,
@@ -1165,7 +1165,7 @@ object HtmlElements:
     * @example
     *   track("kind" := "captions", "src" := "/en.vtt", "srclang" := "en", "label" := "English")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def track(
       id: String = null,
       `class`: String = null,
@@ -1196,7 +1196,7 @@ object HtmlElements:
     * @example
     *   iframe("src" := "https://example.com/embed", "title" := "Embedded content")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def iframe(
       id: String = null,
       `class`: String = null,
@@ -1235,7 +1235,7 @@ object HtmlElements:
     * @example
     *   embed("src" := "/animation.swf", "type" := "application/x-shockwave-flash")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def embed(
       id: String = null,
       `class`: String = null,
@@ -1264,7 +1264,7 @@ object HtmlElements:
     * @example
     *   `object`("data" := "/file.pdf", "type" := "application/pdf")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def `object`(
       id: String = null,
       `class`: String = null,
@@ -1299,7 +1299,7 @@ object HtmlElements:
     * @example
     *   param("name" := "autoplay", "value" := "true")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def param(id: String = null, `class`: String = null, name: String = null, value: String = null, attrs: HtmlFn*)(using
       html: Html
   ): Unit =
@@ -1320,7 +1320,7 @@ object HtmlElements:
     * @example
     *   canvas("id" := "chart", "width" := "400", "height" := "200")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def canvas(id: String = null, `class`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using
@@ -1345,7 +1345,7 @@ object HtmlElements:
     * @example
     *   svg("viewBox" := "0 0 24 24", "width" := "24", "height" := "24"): html"<circle cx='12' cy='12' r='10' />"
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def svg(
       id: String = null,
       `class`: String = null,
@@ -1380,7 +1380,7 @@ object HtmlElements:
     * @example
     *   ul("class" := "list-disc"): li: text("First") li: text("Second")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def ul(id: String = null, `class`: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
       html: Html
   ): Unit =
@@ -1402,7 +1402,7 @@ object HtmlElements:
     * @example
     *   ol("start" := "1"): li: text("Step one") li: text("Step two")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def ol(
       id: String = null,
       `class`: String = null,
@@ -1431,7 +1431,7 @@ object HtmlElements:
     * @example
     *   li("class" := "item"): text("List entry")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def li(id: String = null, `class`: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
       html: Html
   ): Unit =
@@ -1453,7 +1453,7 @@ object HtmlElements:
     * @example
     *   dl: dt: text("HTML") dd: text("HyperText Markup Language")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def dl(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<dl")
     html.attrNotNull("id", id)
@@ -1472,7 +1472,7 @@ object HtmlElements:
     * @example
     *   dt: text("API")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def dt(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<dt")
     html.attrNotNull("id", id)
@@ -1491,7 +1491,7 @@ object HtmlElements:
     * @example
     *   dd: text("Application Programming Interface")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def dd(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<dd")
     html.attrNotNull("id", id)
@@ -1510,7 +1510,7 @@ object HtmlElements:
     * @example
     *   table("class" := "min-w-full"): thead: tr: th: text("Name") tbody: tr: td: text("Ada")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def table(id: String = null, `class`: String = null, border: String = null, role: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using html: Html): Unit =
@@ -1533,7 +1533,7 @@ object HtmlElements:
     * @example
     *   caption: text("Monthly totals")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def caption(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<caption")
     html.attrNotNull("id", id)
@@ -1552,7 +1552,7 @@ object HtmlElements:
     * @example
     *   thead: tr: th: text("Column")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def thead(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<thead")
     html.attrNotNull("id", id)
@@ -1571,7 +1571,7 @@ object HtmlElements:
     * @example
     *   tbody: tr: td: text("Value")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def tbody(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<tbody")
     html.attrNotNull("id", id)
@@ -1590,7 +1590,7 @@ object HtmlElements:
     * @example
     *   tfoot: tr: td: text("Total")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def tfoot(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<tfoot")
     html.attrNotNull("id", id)
@@ -1609,7 +1609,7 @@ object HtmlElements:
     * @example
     *   tr: td: text("Cell")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def tr(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<tr")
     html.attrNotNull("id", id)
@@ -1628,7 +1628,7 @@ object HtmlElements:
     * @example
     *   th("scope" := "col"): text("Price")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def th(
       id: String = null,
       `class`: String = null,
@@ -1661,7 +1661,7 @@ object HtmlElements:
     * @example
     *   td("colspan" := "2"): text("Merged cell")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def td(
       id: String = null,
       `class`: String = null,
@@ -1690,7 +1690,7 @@ object HtmlElements:
     * @example
     *   col("span" := "2", "class" := "numeric")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def col(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(using
       html: Html
   ): Unit =
@@ -1711,7 +1711,7 @@ object HtmlElements:
     * @example
     *   colgroup("span" := "3"): col("class" := "wide")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def colgroup(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using html: Html): Unit =
@@ -1734,7 +1734,7 @@ object HtmlElements:
     * @example
     *   form("action" := "/login", "method" := "post"): input("type" := "text", "name" := "email")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def form(
       id: String = null,
       `class`: String = null,
@@ -1771,7 +1771,7 @@ object HtmlElements:
     * @example
     *   label("for" := "email"): text("Email")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def label(id: String = null, `class`: String = null, `for`: String = null, form: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using html: Html): Unit =
@@ -1795,7 +1795,7 @@ object HtmlElements:
     * @example
     *   input("type" := "email", "name" := "email", "required" := "required")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def input(
       id: String = null,
       `class`: String = null,
@@ -1840,7 +1840,7 @@ object HtmlElements:
     * @example
     *   textarea("name" := "message", "rows" := "4"): text("Hello")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def textarea(
       id: String = null,
       `class`: String = null,
@@ -1879,7 +1879,7 @@ object HtmlElements:
     * @example
     *   button("type" := "submit", "class" := "btn"): text("Save")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def button(
       id: String = null,
       `class`: String = null,
@@ -1917,7 +1917,7 @@ object HtmlElements:
     *   select("name" := "plan"): option("value" := "free"): text("Free") option("value" := "pro", "selected" :=
     *   "selected"): text("Pro")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def select(
       id: String = null,
       `class`: String = null,
@@ -1952,7 +1952,7 @@ object HtmlElements:
     * @example
     *   option("value" := "ca"): text("Canada")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def option(
       id: String = null,
       `class`: String = null,
@@ -1983,7 +1983,7 @@ object HtmlElements:
     * @example
     *   optgroup("label" := "North America"): option("value" := "ca"): text("Canada")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def optgroup(
       id: String = null,
       `class`: String = null,
@@ -2010,7 +2010,7 @@ object HtmlElements:
     * @example
     *   fieldset: legend: text("Shipping") input("type" := "text", "name" := "address")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def fieldset(
       id: String = null,
       `class`: String = null,
@@ -2039,7 +2039,7 @@ object HtmlElements:
     * @example
     *   legend: text("Account details")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def legend(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<legend")
     html.attrNotNull("id", id)
@@ -2058,7 +2058,7 @@ object HtmlElements:
     * @example
     *   datalist("id" := "browsers"): option("value" := "Chrome") option("value" := "Firefox")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def datalist(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<datalist")
     html.attrNotNull("id", id)
@@ -2077,7 +2077,7 @@ object HtmlElements:
     * @example
     *   output("name" := "total", "for" := "qty price"): text("0")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def output(
       id: String = null,
       `class`: String = null,
@@ -2106,7 +2106,7 @@ object HtmlElements:
     * @example
     *   progress("value" := "70", "max" := "100")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def progress(id: String = null, `class`: String = null, value: String = null, max: String = null, attrs: HtmlFn*)(
       using html: Html
   ): Unit =
@@ -2127,7 +2127,7 @@ object HtmlElements:
     * @example
     *   meter("value" := "0.6", "min" := "0", "max" := "1")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def meter(
       id: String = null,
       `class`: String = null,
@@ -2160,7 +2160,7 @@ object HtmlElements:
     * @example
     *   details: summary: text("More info") p: text("Hidden details.")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def details(id: String = null, `class`: String = null, open: String = null, name: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using html: Html): Unit =
@@ -2183,7 +2183,7 @@ object HtmlElements:
     * @example
     *   summary: text("Click to expand")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def summary(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<summary")
     html.attrNotNull("id", id)
@@ -2202,7 +2202,7 @@ object HtmlElements:
     * @example
     *   dialog("id" := "confirm"): p: text("Are you sure?") button("type" := "button"): text("Close")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def dialog(id: String = null, `class`: String = null, open: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
       html: Html
   ): Unit =
@@ -2224,7 +2224,7 @@ object HtmlElements:
     * @example
     *   template("id" := "row-template"): tr: td: text("Placeholder")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def template(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
     html.append("<template")
     html.attrNotNull("id", id)
@@ -2243,7 +2243,7 @@ object HtmlElements:
     * @example
     *   menu("type" := "toolbar"): button("type" := "button"): text("Copy")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def menu(id: String = null, `class`: String = null, `type`: String = null, label: String = null, attrs: HtmlFn*)(
       nested: HtmlFn
   )(using html: Html): Unit =
@@ -2266,7 +2266,7 @@ object HtmlElements:
     * @example
     *   slot("name" := "title"): text("Default title")
     */
-  @nowarn
+  @nowarn("msg=Discarded non-Unit value.*")
   def slot(id: String = null, `class`: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
       html: Html
   ): Unit =
