@@ -2,6 +2,7 @@ package hotmetal.samples
 
 import hotmetal.Html
 import hotmetal.Html.*
+import hotmetal.HtmlElements.*
 import SampleComponents.*
 
 object SamplePages:
@@ -131,11 +132,11 @@ object SamplePages:
       ):
         html"""<main class="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">"""
         sideBar(workspaceNav, "/dashboard")
-        div("class" := "grid gap-6"):
+        div(`class` = "grid gap-6"):
           metricCards(dashboardMetrics)
           html"""<section class="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">"""
-          div("class" := "space-y-4"):
-            div("class" := "flex items-center justify-between"):
+          div(`class` = "space-y-4"):
+            div(`class` = "flex items-center justify-between"):
               div():
                 html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Customer activity</p>"""
                 html"""<h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Live operations snapshot</h1>"""
@@ -145,7 +146,7 @@ object SamplePages:
             <aside class="grid gap-4">
               <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" x-data="{ expanded: false }">
           """
-          div("class" := "flex items-center justify-between"):
+          div(`class` = "flex items-center justify-between"):
             div():
               html"""<p class="text-sm text-slate-500">Owner notes</p>"""
               html"""<p class="mt-1 text-lg font-semibold text-slate-900">Weekly launch review</p>"""
@@ -203,7 +204,7 @@ object SamplePages:
           """
         productList(checkoutProducts)
         html"""<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">"""
-        div("class" := "grid gap-5 md:grid-cols-2"):
+        div(`class` = "grid gap-5 md:grid-cols-2"):
           textField(
             TextField(
               id = "shipping-name",
@@ -273,7 +274,7 @@ object SamplePages:
           )
         )
         html"""</section></section><aside class="space-y-6"><section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">"""
-        div("class" := "flex items-center justify-between"):
+        div(`class` = "flex items-center justify-between"):
           div():
             html"""<p class="text-sm font-semibold text-slate-500">Order total</p>"""
             html"""<p class="mt-1 text-3xl font-black tracking-tight text-slate-900">${"$537"}</p>"""
@@ -297,9 +298,9 @@ object SamplePages:
           )
         )
         html"""<button type="button" class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white">Apply code</button></div>"""
-        div("class" := "mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"):
+        div(`class` = "mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"):
           html"""<p>Package count preview: <span class="font-semibold text-slate-900" x-text="quantity"></span></p>"""
-          div("class" := "mt-3 flex items-center gap-3"):
+          div(`class` = "mt-3 flex items-center gap-3"):
             html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = Math.max(1, quantity - 1)">-</button>"""
             html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = quantity + 1">+</button>"""
             html"""<span class="text-xs uppercase tracking-[0.2em] text-slate-400">Static Alpine demo</span>"""
@@ -325,7 +326,7 @@ object SamplePages:
           "/settings"
         )
         html"""<section class="space-y-6">"""
-        div("class" := "flex flex-wrap gap-3"):
+        div(`class` = "flex flex-wrap gap-3"):
           html"""
             <button
               type="button"
@@ -345,14 +346,14 @@ object SamplePages:
             </button>
           """
         html"""<section x-show="tab === 'profile'" x-transition class="grid gap-6">"""
-        div("class" := "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
+        div(`class` = "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
           html"""
             <h1 class="text-3xl font-black tracking-tight text-slate-900">Reusable settings form</h1>
             <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
               The settings page demonstrates macros for fields, checkboxes, radio groups, flash messages, and conditional tab content.
             </p>
           """
-          div("class" := "mt-6 grid gap-5 md:grid-cols-2"):
+          div(`class` = "mt-6 grid gap-5 md:grid-cols-2"):
             textField(
               TextField(
                 id = "display-name",
@@ -414,7 +415,7 @@ object SamplePages:
             )
           )
         html"""</section><section x-show="tab === 'preferences'" x-transition class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="text-2xl font-bold text-slate-900">Notification preview</h2>"""
-        div("class" := "mt-5 grid gap-4 md:grid-cols-2"):
+        div(`class` = "mt-5 grid gap-4 md:grid-cols-2"):
           for message <- Seq(
             "Weekly digest with performance summaries",
             "Billing notices for failed cards",
@@ -444,18 +445,18 @@ object SamplePages:
             The landing page showcases shared layout components, repeated pricing cards, FAQ accordions, generated banners, and a small modal interaction.
           </p>
         """
-        div("class" := "mt-8 flex flex-wrap gap-3"):
+        div(`class` = "mt-8 flex flex-wrap gap-3"):
           html"""<button type="button" class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900" @click="modalOpen = true">Preview launch modal</button>"""
           html"""<a href="#pricing" class="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white">View pricing</a>"""
-      div("class" := "rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl"):
+      div(`class` = "rounded-[2rem] bg-white p-6 text-slate-900 shadow-2xl"):
         html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">Why it matters</p>"""
-        div("class" := "mt-4 grid gap-4"):
+        div(`class` = "mt-4 grid gap-4"):
           for bullet <- Seq(
             "Child pages extend a shared base layout.",
             "Navigation and alerts render from shared Scala data.",
             "Forms, lists, and cards exercise loops and reusable fragments."
           ) do
-            div("class" := "rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"):
+            div(`class` = "rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"):
               html"$bullet"
       html"""
         <div
@@ -482,12 +483,12 @@ object SamplePages:
         html"""<h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Generated through reusable data-driven components</h2>"""
       pricingGrid(pricingTiers)
       html"""</section><section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">"""
-      div("class" := "space-y-4"):
+      div(`class` = "space-y-4"):
         html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Frequently asked questions</p>"""
         html"""<h2 class="text-3xl font-black tracking-tight text-slate-900">FAQ accordions with Alpine.js</h2>"""
         faqAccordion(faqItems)
       html"""<aside class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h3 class="text-2xl font-bold text-slate-900">Join the demo newsletter</h3><p class="mt-3 text-sm leading-6 text-slate-600">This sidebar uses the same field macros as the checkout and settings pages.</p>"""
-      div("class" := "mt-5 grid gap-4"):
+      div(`class` = "mt-5 grid gap-4"):
         textField(
           TextField(
             id = "newsletter-name",

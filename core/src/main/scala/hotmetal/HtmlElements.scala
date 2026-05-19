@@ -1,18 +1,15 @@
 package hotmetal
 
 import Html.*
+import scala.annotation.nowarn
 
 /** HtmlElements provides a set of inline methods for each HTML element.
   *
-  * These methods are used to generate HTML elements in a more functional style.
-  * Each method accepts attribute fragments and nested content that append into the
-  * current `Html` context.
+  * These methods are used to generate HTML elements in a more functional style. Each method accepts attribute fragments
+  * and nested content that append into the current `Html` context.
   *
   * @example
-  *   Html:
-  *     head():
-  *       title("class" := "page-title"):
-  *         text("My Page")
+  *   Html: head(): title("class" := "page-title"): text("My Page")
   */
 object HtmlElements:
 
@@ -23,13 +20,15 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   head():
-    *     meta("charset" := "utf-8")
-    *     title():
-    *       text("My Page")
+    *   head(): meta("charset" := "utf-8") title(): text("My Page")
     */
-  inline def head(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("head")(attrs*)(nested)
+  @nowarn
+  def head(id: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<head")
+    html.foreach(attrs)
+    html.append(">\n")
+    nested.apply
+    html.append("\n</head>\n")
 
   /** The `<title>` element: Document title.
     *
@@ -38,11 +37,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   title:
-    *     text("Dashboard")
+    *   title: text("Dashboard")
     */
-  inline def title(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("title")(attrs*)(nested)
+  @nowarn
+  def title(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<title")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</title>")
 
   /** The `<meta>` element: Metadata.
     *
@@ -51,11 +56,18 @@ object HtmlElements:
     * '''Common attributes:''' `charset`, `name`, `content`, `http-equiv`, `property`, `media`
     *
     * @example
-    *   meta("charset" := "utf-8")
-    *   meta("name" := "viewport", "content" := "width=device-width, initial-scale=1")
+    *   meta("charset" := "utf-8") meta("name" := "viewport", "content" := "width=device-width, initial-scale=1")
     */
-  inline def meta(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("meta")(attrs*)(nested)
+  @nowarn
+  def meta(charset: String = null, name: String = null, content: String = null, attrs: HtmlFn*)(using
+      html: Html
+  ): Unit =
+    html.append("<meta")
+    html.attrNotNull("charset", charset)
+    html.attrNotNull("name", name)
+    html.attrNotNull("content", content)
+    html.foreach(attrs)
+    html.append("/>")
 
   /** The `<link>` element: External resource link.
     *
@@ -66,8 +78,27 @@ object HtmlElements:
     * @example
     *   link("rel" := "stylesheet", "href" := "/app.css")
     */
-  inline def link(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("link")(attrs*)(nested)
+  @nowarn // html.foeach giving bogus warning
+  def link(
+      rel: String = null,
+      href: String = null,
+      `type`: String = null,
+      media: String = null,
+      sizes: String = null,
+      crossorigin: String = null,
+      as: String = null,
+      attrs: HtmlFn*
+  )(using html: Html): Unit =
+    html.append("<link")
+    html.attrNotNull("rel", rel)
+    html.attrNotNull("href", href)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("media", media)
+    html.attrNotNull("sizes", sizes)
+    html.attrNotNull("crossorigin", crossorigin)
+    html.attrNotNull("as", as)
+    html.foreach(attrs)
+    html.append("/>")
 
   /** The `<style>` element: Embedded CSS.
     *
@@ -76,23 +107,57 @@ object HtmlElements:
     * '''Common attributes:''' `media`, `type`, `nonce`, `id`, `class`
     *
     * @example
-    *   style:
-    *     html".card { padding: 1rem; }"
+    *   style: html""" .card { padding: 1rem; } """
     */
-  inline def style(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("style")(attrs*)(nested)
+  @nowarn
+  def style(
+      media: String = null,
+      `type`: String = null,
+      nonce: String = null,
+      id: String = null,
+      `class`: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<style")
+    html.attrNotNull("media", media)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("nonce", nonce)
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append(">\n")
+    nested.apply
+    html.append("\n</style>\n")
 
   /** The `<script>` element: Executable script.
     *
-    * '''Common usage:''' Embed or reference JavaScript executed by the browser.
-    *
-    * '''Common attributes:''' `src`, `type`, `async`, `defer`, `nomodule`, `crossorigin`, `integrity`, `nonce`
+    * Specialized version of `script` that accepts a `defer` flag and a `src` attribute.
     *
     * @example
-    *   script("src" := "/app.js", "defer" := "defer")
+    *   script(defer = true, src = "/app.js")
     */
-  inline def script(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("script")(attrs*)(nested)
+  @nowarn
+  def script(defer: Boolean, src: String, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<script")
+    if defer then html.attrNoValue("defer")
+    html.attrNotNull("src", src)
+    html.foreach(attrs)
+    html.append(">\n")
+    nested.apply
+    html.append("\n</script>\n")
+
+  /** The `<script>` element: Executable script.
+    *
+    * Specialized version of `script` that accepts a nested string.
+    *
+    * @example
+    *   script("console.log('Hello, world!');")
+    */
+  @nowarn
+  def script(nested: String)(using html: Html): Unit =
+    html.append("<script>\n")
+    html.append(nested)
+    html.append("\n</script>\n")
 
   /** The `<noscript>` element: No-script fallback.
     *
@@ -101,12 +166,13 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   noscript:
-    *     p:
-    *       text("Please enable JavaScript.")
+    *   noscript: p: text("Please enable JavaScript.")
     */
-  inline def noscript(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("noscript")(attrs*)(nested)
+  @nowarn
+  def noscript(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<noscript>\n")
+    nested.apply
+    html.append("\n</noscript>\n")
 
   /** The `<base>` element: Base URL.
     *
@@ -117,8 +183,13 @@ object HtmlElements:
     * @example
     *   base("href" := "https://example.com/")
     */
-  inline def base(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("base")(attrs*)(nested)
+  @nowarn
+  def base(href: String = null, target: String = null, attrs: HtmlFn*)(using html: Html): Unit =
+    html.append("<base")
+    html.attrNotNull("href", href)
+    html.attrNotNull("target", target)
+    html.foreach(attrs)
+    html.append("/>")
 
   /** The `<body>` element: Document body.
     *
@@ -127,11 +198,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `style`
     *
     * @example
-    *   body("class" := "min-h-screen"):
-    *     main:
-    *       text("Hello")
+    *   body("class" := "min-h-screen"): main: text("Hello")
     */
-  inline def body(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
+  @nowarn
+  def body(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<body")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</body>")
     elem("body")(attrs*)(nested)
 
   /** The `<header>` element: Page or section header.
@@ -141,12 +218,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `role`
     *
     * @example
-    *   header("class" := "site-header"):
-    *     h1:
-    *       text("Hotmetal")
+    *   header("class" := "site-header"): h1: text("Hotmetal")
     */
-  inline def header(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("header")(attrs*)(nested)
+  @nowarn
+  def header(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<header")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</header>")
 
   /** The `<nav>` element: Navigation links.
     *
@@ -155,12 +237,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `aria-label`
     *
     * @example
-    *   nav("aria-label" := "Main"):
-    *     a("href" := "/"):
-    *       text("Home")
+    *   nav("aria-label" := "Main"): a("href" := "/"): text("Home")
     */
-  inline def nav(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("nav")(attrs*)(nested)
+  @nowarn
+  def nav(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<nav")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</nav>")
 
   /** The `<main>` element: Main content.
     *
@@ -169,12 +256,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `role`
     *
     * @example
-    *   main("id" := "content"):
-    *     p:
-    *       text("Primary page content.")
+    *   main("id" := "content"): p: text("Primary page content.")
     */
-  inline def main(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("main")(attrs*)(nested)
+  @nowarn
+  def main(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<main")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</main>")
 
   /** The `<section>` element: Thematic grouping.
     *
@@ -183,12 +275,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `aria-labelledby`
     *
     * @example
-    *   section("id" := "features"):
-    *     h2:
-    *       text("Features")
+    *   section("id" := "features"): h2: text("Features")
     */
-  inline def section(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("section")(attrs*)(nested)
+  @nowarn
+  def section(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<section")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</section>")
 
   /** The `<article>` element: Self-contained composition.
     *
@@ -197,12 +294,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `itemscope`, `itemtype`
     *
     * @example
-    *   article("class" := "post"):
-    *     h2:
-    *       text("Release notes")
+    *   article("class" := "post"): h2: text("Release notes")
     */
-  inline def article(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("article")(attrs*)(nested)
+  @nowarn
+  def article(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<article")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</article>")
 
   /** The `<aside>` element: Sidebar or tangential content.
     *
@@ -211,12 +313,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `aria-label`
     *
     * @example
-    *   aside("class" := "sidebar"):
-    *     nav:
-    *       text("Related links")
+    *   aside("class" := "sidebar"): nav: text("Related links")
     */
-  inline def aside(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("aside")(attrs*)(nested)
+  @nowarn
+  def aside(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<aside")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</aside>")
 
   /** The `<footer>` element: Footer for page or section.
     *
@@ -225,12 +332,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   footer("class" := "site-footer"):
-    *     p:
-    *       text("© 2026 Example")
+    *   footer("class" := "site-footer"): p: text("© 2026 Example")
     */
-  inline def footer(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("footer")(attrs*)(nested)
+  @nowarn
+  def footer(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<footer")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</footer>")
 
   /** The `<address>` element: Contact information.
     *
@@ -239,11 +351,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   address:
-    *     text("Contact us at support@example.com")
+    *   address: text("Contact us at support@example.com")
     */
-  inline def address(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("address")(attrs*)(nested)
+  @nowarn
+  def address(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<address")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</address>")
 
   /** The `<h1>` element: Heading level 1.
     *
@@ -252,11 +370,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h1("id" := "page-title"):
-    *     text("Welcome")
+    *   h1("id" := "page-title"): text("Welcome")
     */
-  inline def h1(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h1")(attrs*)(nested)
+  @nowarn
+  def h1(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h1")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h1>")
 
   /** The `<h2>` element: Heading level 2.
     *
@@ -265,11 +389,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h2:
-    *     text("Overview")
+    *   h2: text("Overview")
     */
-  inline def h2(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h2")(attrs*)(nested)
+  @nowarn
+  def h2(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h2")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h2>")
 
   /** The `<h3>` element: Heading level 3.
     *
@@ -278,11 +408,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h3:
-    *     text("Details")
+    *   h3: text("Details")
     */
-  inline def h3(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h3")(attrs*)(nested)
+  @nowarn
+  def h3(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h3")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h3>")
 
   /** The `<h4>` element: Heading level 4.
     *
@@ -291,11 +427,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h4:
-    *     text("Subsection")
+    *   h4: text("Subsection")
     */
-  inline def h4(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h4")(attrs*)(nested)
+  @nowarn
+  def h4(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h4")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h4>")
 
   /** The `<h5>` element: Heading level 5.
     *
@@ -304,11 +446,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h5:
-    *     text("Note")
+    *   h5: text("Note")
     */
-  inline def h5(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h5")(attrs*)(nested)
+  @nowarn
+  def h5(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h5")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h5>")
 
   /** The `<h6>` element: Heading level 6.
     *
@@ -317,11 +465,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `title`
     *
     * @example
-    *   h6:
-    *     text("Fine print")
+    *   h6: text("Fine print")
     */
-  inline def h6(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("h6")(attrs*)(nested)
+  @nowarn
+  def h6(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<h6")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</h6>")
 
   /** The `<p>` element: Paragraph.
     *
@@ -330,11 +484,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `lang`, `dir`
     *
     * @example
-    *   p("class" := "lead"):
-    *     text("A short introduction.")
+    *   p("class" := "lead"): text("A short introduction.")
     */
-  inline def p(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("p")(attrs*)(nested)
+  @nowarn
+  def p(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<p")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</p>")
 
   /** The `<a>` element: Hyperlink.
     *
@@ -343,11 +503,27 @@ object HtmlElements:
     * '''Common attributes:''' `href`, `target`, `rel`, `download`, `hreflang`, `type`, `referrerpolicy`
     *
     * @example
-    *   a("href" := "/docs", "class" := "link"):
-    *     text("Documentation")
+    *   a(id = "docs-link", `class` = "link", href = "/docs"): text("Documentation")
     */
-  inline def a(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("a")(attrs*)(nested)
+  @nowarn
+  def a(
+      id: String = null,
+      `class`: String = null,
+      href: String = null,
+      target: String = null,
+      rel: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<a")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("href", href)
+    html.attrNotNull("target", target)
+    html.attrNotNull("rel", rel)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</a>")
 
   /** The `<span>` element: Generic inline container.
     *
@@ -356,11 +532,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `lang`, `title`
     *
     * @example
-    *   span("class" := "badge"):
-    *     text("New")
+    *   span("class" := "badge"): text("New")
     */
-  inline def span(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("span")(attrs*)(nested)
+  @nowarn
+  def span(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<span")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</span>")
 
   /** The `<div>` element: Generic block container.
     *
@@ -369,12 +551,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `role`, `tabindex`
     *
     * @example
-    *   div("class" := "card"):
-    *     p:
-    *       text("Card body")
+    *   div(`class` = "card"): p: text("Card body")
     */
-  inline def div(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("div")(attrs*)(nested)
+  @nowarn
+  def div(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<div")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</div>")
 
   /** The `<br>` element: Line break.
     *
@@ -383,13 +570,10 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `clear`
     *
     * @example
-    *   p:
-    *     text("Line one")
-    *     br()
-    *     text("Line two")
+    *   p: text("Line one") br() text("Line two")
     */
-  inline def br(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("br")(attrs*)(nested)
+  def br()(using html: Html): Unit =
+    html.append("<br/>")
 
   /** The `<hr>` element: Thematic break.
     *
@@ -398,15 +582,11 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   section:
-    *     p:
-    *       text("Part one")
-    *     hr()
-    *     p:
-    *       text("Part two")
+    *   section: p: text("Part one") hr() p: text("Part two")
     */
-  inline def hr(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("hr")(attrs*)(nested)
+  @nowarn
+  def hr()(using html: Html): Unit =
+    html.append("<hr/>")
 
   /** The `<strong>` element: Strong importance.
     *
@@ -415,14 +595,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Please ")
-    *     strong:
-    *       text("save")
-    *     text(" your work.")
+    *   p: text("Please ") strong: text("save") text(" your work.")
     */
-  inline def strong(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("strong")(attrs*)(nested)
+  @nowarn
+  def strong(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<strong")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</strong>")
 
   /** The `<em>` element: Emphasis.
     *
@@ -431,14 +614,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("This is ")
-    *     em:
-    *       text("important")
-    *     text(".")
+    *   p: text("This is ") em: text("important") text(".")
     */
-  inline def em(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("em")(attrs*)(nested)
+  @nowarn
+  def em(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<em")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</em>")
 
   /** The `<b>` element: Bold text (presentational).
     *
@@ -447,12 +633,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     b:
-    *       text("Bold")
-    *     text(" label")
+    *   p: b: text("Bold") text(" label")
     */
-  inline def b(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
+  @nowarn
+  def b(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<b")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</b>")
     elem("b")(attrs*)(nested)
 
   /** The `<i>` element: Italic text (presentational).
@@ -462,13 +653,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     i:
-    *       text("italic")
-    *     text(" styling")
+    *   p: i: text("italic") text(" styling")
     */
-  inline def i(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("i")(attrs*)(nested)
+  @nowarn
+  def i(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<i")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</i>")
 
   /** The `<u>` element: Unarticulated annotation.
     *
@@ -477,12 +672,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     u:
-    *       text("annotated")
+    *   p: u: text("annotated")
     */
-  inline def u(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("u")(attrs*)(nested)
+  @nowarn
+  def u(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<u")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</u>")
 
   /** The `<small>` element: Side comment or fine print.
     *
@@ -491,11 +691,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   small:
-    *     text("Prices may vary.")
+    *   small: text("Prices may vary.")
     */
-  inline def small(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("small")(attrs*)(nested)
+  @nowarn
+  def small(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<small")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</small>")
 
   /** The `<mark>` element: Highlighted text.
     *
@@ -504,14 +710,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Find the ")
-    *     mark:
-    *       text("keyword")
-    *     text(" here.")
+    *   p: text("Find the ") mark: text("keyword") text(" here.")
     */
-  inline def mark(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("mark")(attrs*)(nested)
+  @nowarn
+  def mark(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<mark")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</mark>")
 
   /** The `<sub>` element: Subscript.
     *
@@ -520,14 +729,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("H")
-    *     sub:
-    *       text("2")
-    *     text("O")
+    *   p: text("H") sub: text("2") text("O")
     */
-  inline def sub(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("sub")(attrs*)(nested)
+  @nowarn
+  def sub(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<sub")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</sub>")
 
   /** The `<sup>` element: Superscript.
     *
@@ -536,13 +748,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("x")
-    *     sup:
-    *       text("2")
+    *   p: text("x") sup: text("2")
     */
-  inline def sup(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("sup")(attrs*)(nested)
+  @nowarn
+  def sup(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<sup")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</sup>")
 
   /** The `<code>` element: Inline code.
     *
@@ -551,14 +767,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Use ")
-    *     code:
-    *       text("Html.text")
-    *     text(" for escaping.")
+    *   p: text("Use ") code: text("Html.text") text(" for escaping.")
     */
-  inline def code(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("code")(attrs*)(nested)
+  @nowarn
+  def code(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<code")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</code>")
 
   /** The `<pre>` element: Preformatted text.
     *
@@ -567,12 +786,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   pre:
-    *     code:
-    *       text("val x = 1")
+    *   pre: code: text("val x = 1")
     */
-  inline def pre(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("pre")(attrs*)(nested)
+  @nowarn
+  def pre(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<pre")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</pre>")
 
   /** The `<kbd>` element: Keyboard input.
     *
@@ -581,17 +805,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Press ")
-    *     kbd:
-    *       text("Ctrl")
-    *     text("+")
-    *     kbd:
-    *       text("S")
-    *     text(" to save.")
+    *   p: text("Press ") kbd: text("Ctrl") text("+") kbd: text("S") text(" to save.")
     */
-  inline def kbd(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("kbd")(attrs*)(nested)
+  @nowarn
+  def kbd(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<kbd")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</kbd>")
 
   /** The `<samp>` element: Sample output.
     *
@@ -600,13 +824,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Output: ")
-    *     samp:
-    *       text("OK")
+    *   p: text("Output: ") samp: text("OK")
     */
-  inline def samp(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("samp")(attrs*)(nested)
+  @nowarn
+  def samp(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<samp")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</samp>")
 
   /** The `<var>` element: Variable.
     *
@@ -615,14 +843,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     text("Let ")
-    *     `var`:
-    *       text("n")
-    *     text(" be the count.")
+    *   p: text("Let ") `var`: text("n") text(" be the count.")
     */
-  inline def `var`(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("var")(attrs*)(nested)
+  @nowarn
+  def `var`(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<var")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</var>")
 
   /** The `<blockquote>` element: Block quotation.
     *
@@ -631,12 +862,17 @@ object HtmlElements:
     * '''Common attributes:''' `cite`, `id`, `class`
     *
     * @example
-    *   blockquote("cite" := "https://example.com"):
-    *     p:
-    *       text("A quoted passage.")
+    *   blockquote("cite" := "https://example.com"): p: text("A quoted passage.")
     */
-  inline def blockquote(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("blockquote")(attrs*)(nested)
+  @nowarn
+  def blockquote(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<blockquote")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</blockquote>")
 
   /** The `<q>` element: Inline quotation.
     *
@@ -645,14 +881,17 @@ object HtmlElements:
     * '''Common attributes:''' `cite`, `id`, `class`
     *
     * @example
-    *   p:
-    *     text("As they said, ")
-    *     q("cite" := "https://example.com"):
-    *       text("hello")
-    *     text(".")
+    *   p: text("As they said, ") q("cite" := "https://example.com"): text("hello") text(".")
     */
-  inline def q(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("q")(attrs*)(nested)
+  @nowarn
+  def q(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<q")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</q>")
 
   /** The `<cite>` element: Citation.
     *
@@ -661,12 +900,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   p:
-    *     cite:
-    *       text("The Pragmatic Programmer")
+    *   p: cite: text("The Pragmatic Programmer")
     */
-  inline def cite(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("cite")(attrs*)(nested)
+  @nowarn
+  def cite(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<cite")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</cite>")
 
   /** The `<abbr>` element: Abbreviation.
     *
@@ -675,11 +919,17 @@ object HtmlElements:
     * '''Common attributes:''' `title`, `id`, `class`
     *
     * @example
-    *   abbr("title" := "HyperText Markup Language"):
-    *     text("HTML")
+    *   abbr("title" := "HyperText Markup Language"): text("HTML")
     */
-  inline def abbr(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("abbr")(attrs*)(nested)
+  @nowarn
+  def abbr(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<abbr")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</abbr>")
 
   /** The `<time>` element: Machine-readable datetime.
     *
@@ -688,11 +938,17 @@ object HtmlElements:
     * '''Common attributes:''' `datetime`, `id`, `class`
     *
     * @example
-    *   time("datetime" := "2026-05-18"):
-    *     text("May 18, 2026")
+    *   time("datetime" := "2026-05-18"): text("May 18, 2026")
     */
-  inline def time(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("time")(attrs*)(nested)
+  @nowarn
+  def time(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<time")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</time>")
 
   /** The `<img>` element: Image.
     *
@@ -703,8 +959,15 @@ object HtmlElements:
     * @example
     *   img("src" := "/logo.svg", "alt" := "Logo")
     */
-  inline def img(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("img")(attrs*)(nested)
+  @nowarn
+  def img(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<img")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</img>")
 
   /** The `<picture>` element: Responsive image container.
     *
@@ -713,12 +976,18 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   picture:
-    *     source("media" := "(min-width: 800px)", "srcset" := "large.jpg")
-    *     img("src" := "small.jpg", "alt" := "Hero")
+    *   picture: source("media" := "(min-width: 800px)", "srcset" := "large.jpg") img("src" := "small.jpg", "alt" :=
+    *   "Hero")
     */
-  inline def picture(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("picture")(attrs*)(nested)
+  @nowarn
+  def picture(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<picture")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</picture>")
 
   /** The `<source>` element: Media source.
     *
@@ -729,8 +998,29 @@ object HtmlElements:
     * @example
     *   source("src" := "clip.webm", "type" := "video/webm")
     */
-  inline def source(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("source")(attrs*)(nested)
+  @nowarn
+  def source(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      srcset: String = null,
+      `type`: String = null,
+      media: String = null,
+      sizes: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<source")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("srcset", srcset)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("media", media)
+    html.attrNotNull("sizes", sizes)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</source>")
 
   /** The `<figure>` element: Illustration with optional caption.
     *
@@ -739,13 +1029,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   figure:
-    *     img("src" := "/chart.png", "alt" := "Chart")
-    *     figcaption:
-    *       text("Quarterly growth")
+    *   figure: img("src" := "/chart.png", "alt" := "Chart") figcaption: text("Quarterly growth")
     */
-  inline def figure(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("figure")(attrs*)(nested)
+  @nowarn
+  def figure(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<figure")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</figure>")
 
   /** The `<figcaption>` element: Figure caption.
     *
@@ -754,11 +1048,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   figcaption:
-    *     text("Figure 1: Architecture")
+    *   figcaption: text("Figure 1: Architecture")
     */
-  inline def figcaption(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("figcaption")(attrs*)(nested)
+  @nowarn
+  def figcaption(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<figcaption")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</figcaption>")
 
   /** The `<audio>` element: Audio player.
     *
@@ -767,24 +1067,79 @@ object HtmlElements:
     * '''Common attributes:''' `src`, `controls`, `autoplay`, `loop`, `muted`, `preload`, `crossorigin`
     *
     * @example
-    *   audio("controls" := "controls"):
-    *     source("src" := "/sound.mp3", "type" := "audio/mpeg")
+    *   audio("controls" := "controls"): source("src" := "/sound.mp3", "type" := "audio/mpeg")
     */
-  inline def audio(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("audio")(attrs*)(nested)
+  @nowarn
+  def audio(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      controls: String = null,
+      autoplay: String = null,
+      loop: String = null,
+      muted: String = null,
+      preload: String = null,
+      crossorigin: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<audio")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("controls", controls)
+    html.attrNotNull("autoplay", autoplay)
+    html.attrNotNull("loop", loop)
+    html.attrNotNull("muted", muted)
+    html.attrNotNull("preload", preload)
+    html.attrNotNull("crossorigin", crossorigin)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</audio>")
 
   /** The `<video>` element: Video player.
     *
     * '''Common usage:''' Embed video content with native browser controls.
     *
-    * '''Common attributes:''' `src`, `controls`, `width`, `height`, `poster`, `autoplay`, `loop`, `muted`, `preload`, `playsinline`
+    * '''Common attributes:''' `src`, `controls`, `width`, `height`, `poster`, `autoplay`, `loop`, `muted`, `preload`,
+    * `playsinline`
     *
     * @example
-    *   video("controls" := "controls", "width" := "640"):
-    *     source("src" := "/clip.mp4", "type" := "video/mp4")
+    *   video("controls" := "controls", "width" := "640"): source("src" := "/clip.mp4", "type" := "video/mp4")
     */
-  inline def video(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("video")(attrs*)(nested)
+  @nowarn
+  def video(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      controls: String = null,
+      width: String = null,
+      height: String = null,
+      poster: String = null,
+      autoplay: String = null,
+      loop: String = null,
+      muted: String = null,
+      preload: String = null,
+      playsinline: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<video")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("controls", controls)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.attrNotNull("poster", poster)
+    html.attrNotNull("autoplay", autoplay)
+    html.attrNotNull("loop", loop)
+    html.attrNotNull("muted", muted)
+    html.attrNotNull("preload", preload)
+    html.attrNotNull("playsinline", playsinline)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</video>")
 
   /** The `<track>` element: Media text track.
     *
@@ -795,8 +1150,29 @@ object HtmlElements:
     * @example
     *   track("kind" := "captions", "src" := "/en.vtt", "srclang" := "en", "label" := "English")
     */
-  inline def track(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("track")(attrs*)(nested)
+  @nowarn
+  def track(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      kind: String = null,
+      srclang: String = null,
+      label: String = null,
+      default: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<track")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("kind", kind)
+    html.attrNotNull("srclang", srclang)
+    html.attrNotNull("label", label)
+    html.attrNotNull("default", default)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</track>")
 
   /** The `<iframe>` element: Inline frame.
     *
@@ -807,8 +1183,35 @@ object HtmlElements:
     * @example
     *   iframe("src" := "https://example.com/embed", "title" := "Embedded content")
     */
-  inline def iframe(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("iframe")(attrs*)(nested)
+  @nowarn
+  def iframe(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      name: String = null,
+      width: String = null,
+      height: String = null,
+      sandbox: String = null,
+      allow: String = null,
+      loading: String = null,
+      referrerpolicy: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<iframe")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("name", name)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.attrNotNull("sandbox", sandbox)
+    html.attrNotNull("allow", allow)
+    html.attrNotNull("loading", loading)
+    html.attrNotNull("referrerpolicy", referrerpolicy)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</iframe>")
 
   /** The `<embed>` element: Embedded external content.
     *
@@ -819,8 +1222,19 @@ object HtmlElements:
     * @example
     *   embed("src" := "/animation.swf", "type" := "application/x-shockwave-flash")
     */
-  inline def embed(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("embed")(attrs*)(nested)
+  @nowarn
+  def embed(id: String = null, `class`: String = null, src: String = null, `type`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<embed")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</embed>")
 
   /** The `<object>` element: External resource object.
     *
@@ -831,8 +1245,21 @@ object HtmlElements:
     * @example
     *   `object`("data" := "/file.pdf", "type" := "application/pdf")
     */
-  inline def `object`(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("object")(attrs*)(nested)
+  @nowarn
+  def `object`(id: String = null, `class`: String = null, data: String = null, `type`: String = null, width: String = null, height: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<object")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("data", data)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.attrNotNull("name", name)
+    html.attrNotNull("form", form)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</object>")
 
   /** The `<param>` element: Object parameter.
     *
@@ -843,8 +1270,17 @@ object HtmlElements:
     * @example
     *   param("name" := "autoplay", "value" := "true")
     */
-  inline def param(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("param")(attrs*)(nested)
+  @nowarn
+  def param(id: String = null, `class`: String = null, name: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<param")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("value", value)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</param>")
 
   /** The `<canvas>` element: Scripted drawing surface.
     *
@@ -855,8 +1291,17 @@ object HtmlElements:
     * @example
     *   canvas("id" := "chart", "width" := "400", "height" := "200")
     */
-  inline def canvas(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("canvas")(attrs*)(nested)
+  @nowarn
+  def canvas(id: String = null, `class`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<canvas")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</canvas>")
 
   /** The `<svg>` element: Scalable vector graphics.
     *
@@ -865,11 +1310,23 @@ object HtmlElements:
     * '''Common attributes:''' `viewBox`, `width`, `height`, `xmlns`, `role`, `aria-label`
     *
     * @example
-    *   svg("viewBox" := "0 0 24 24", "width" := "24", "height" := "24"):
-    *     html"<circle cx='12' cy='12' r='10' />"
+    *   svg("viewBox" := "0 0 24 24", "width" := "24", "height" := "24"): html"<circle cx='12' cy='12' r='10' />"
     */
-  inline def svg(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("svg")(attrs*)(nested)
+  @nowarn
+  def svg(id: String = null, `class`: String = null, viewBox: String = null, width: String = null, height: String = null, xmlns: String = null, role: String = null, ariaLabel: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<svg")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("viewBox", viewBox)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.attrNotNull("xmlns", xmlns)
+    html.attrNotNull("role", role)
+    html.attrNotNull("aria-label", ariaLabel)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</svg>")
 
   /** The `<ul>` element: Unordered list.
     *
@@ -878,14 +1335,18 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `role`
     *
     * @example
-    *   ul("class" := "list-disc"):
-    *     li:
-    *       text("First")
-    *     li:
-    *       text("Second")
+    *   ul("class" := "list-disc"): li: text("First") li: text("Second")
     */
-  inline def ul(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("ul")(attrs*)(nested)
+  @nowarn
+  def ul(id: String = null, `class`: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<ul")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("role", role)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</ul>")
 
   /** The `<ol>` element: Ordered list.
     *
@@ -894,14 +1355,20 @@ object HtmlElements:
     * '''Common attributes:''' `start`, `reversed`, `type`, `id`, `class`
     *
     * @example
-    *   ol("start" := "1"):
-    *     li:
-    *       text("Step one")
-    *     li:
-    *       text("Step two")
+    *   ol("start" := "1"): li: text("Step one") li: text("Step two")
     */
-  inline def ol(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("ol")(attrs*)(nested)
+  @nowarn
+  def ol(id: String = null, `class`: String = null, start: String = null, reversed: String = null, `type`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<ol")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("start", start)
+    html.attrNotNull("reversed", reversed)
+    html.attrNotNull("type", `type`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</ol>")
 
   /** The `<li>` element: List item.
     *
@@ -910,11 +1377,18 @@ object HtmlElements:
     * '''Common attributes:''' `value`, `id`, `class`
     *
     * @example
-    *   li("class" := "item"):
-    *     text("List entry")
+    *   li("class" := "item"): text("List entry")
     */
-  inline def li(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("li")(attrs*)(nested)
+  @nowarn
+  def li(id: String = null, `class`: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<li")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("value", value)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</li>")
 
   /** The `<dl>` element: Description list.
     *
@@ -923,14 +1397,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   dl:
-    *     dt:
-    *       text("HTML")
-    *     dd:
-    *       text("HyperText Markup Language")
+    *   dl: dt: text("HTML") dd: text("HyperText Markup Language")
     */
-  inline def dl(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("dl")(attrs*)(nested)
+  @nowarn
+  def dl(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<dl")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</dl>")
 
   /** The `<dt>` element: Description term.
     *
@@ -939,11 +1416,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   dt:
-    *     text("API")
+    *   dt: text("API")
     */
-  inline def dt(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("dt")(attrs*)(nested)
+  @nowarn
+  def dt(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<dt")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</dt>")
 
   /** The `<dd>` element: Description details.
     *
@@ -952,10 +1435,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   dd:
-    *     text("Application Programming Interface")
+    *   dd: text("Application Programming Interface")
     */
-  inline def dd(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
+  @nowarn
+  def dd(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<dd")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</dd>")
     elem("dd")(attrs*)(nested)
 
   /** The `<table>` element: Tabular data.
@@ -965,18 +1455,19 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`, `border`, `role`
     *
     * @example
-    *   table("class" := "min-w-full"):
-    *     thead:
-    *       tr:
-    *         th:
-    *           text("Name")
-    *     tbody:
-    *       tr:
-    *         td:
-    *           text("Ada")
+    *   table("class" := "min-w-full"): thead: tr: th: text("Name") tbody: tr: td: text("Ada")
     */
-  inline def table(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("table")(attrs*)(nested)
+  @nowarn
+  def table(id: String = null, `class`: String = null, border: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<table")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("border", border)
+    html.attrNotNull("role", role)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</table>")
 
   /** The `<caption>` element: Table caption.
     *
@@ -985,11 +1476,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   caption:
-    *     text("Monthly totals")
+    *   caption: text("Monthly totals")
     */
-  inline def caption(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("caption")(attrs*)(nested)
+  @nowarn
+  def caption(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<caption")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</caption>")
 
   /** The `<thead>` element: Table head.
     *
@@ -998,13 +1495,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   thead:
-    *     tr:
-    *       th:
-    *         text("Column")
+    *   thead: tr: th: text("Column")
     */
-  inline def thead(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("thead")(attrs*)(nested)
+  @nowarn
+  def thead(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<thead")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</thead>")
 
   /** The `<tbody>` element: Table body.
     *
@@ -1013,13 +1514,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   tbody:
-    *     tr:
-    *       td:
-    *         text("Value")
+    *   tbody: tr: td: text("Value")
     */
-  inline def tbody(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("tbody")(attrs*)(nested)
+  @nowarn
+  def tbody(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<tbody")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</tbody>")
 
   /** The `<tfoot>` element: Table footer.
     *
@@ -1028,13 +1533,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   tfoot:
-    *     tr:
-    *       td:
-    *         text("Total")
+    *   tfoot: tr: td: text("Total")
     */
-  inline def tfoot(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("tfoot")(attrs*)(nested)
+  @nowarn
+  def tfoot(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<tfoot")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</tfoot>")
 
   /** The `<tr>` element: Table row.
     *
@@ -1043,12 +1552,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   tr:
-    *     td:
-    *       text("Cell")
+    *   tr: td: text("Cell")
     */
-  inline def tr(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("tr")(attrs*)(nested)
+  @nowarn
+  def tr(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<tr")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</tr>")
 
   /** The `<th>` element: Table header cell.
     *
@@ -1057,11 +1571,22 @@ object HtmlElements:
     * '''Common attributes:''' `scope`, `colspan`, `rowspan`, `headers`, `abbr`, `id`, `class`
     *
     * @example
-    *   th("scope" := "col"):
-    *     text("Price")
+    *   th("scope" := "col"): text("Price")
     */
-  inline def th(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("th")(attrs*)(nested)
+  @nowarn
+  def th(id: String = null, `class`: String = null, scope: String = null, colspan: String = null, rowspan: String = null, headers: String = null, abbr: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<th")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("scope", scope)
+    html.attrNotNull("colspan", colspan)
+    html.attrNotNull("rowspan", rowspan)
+    html.attrNotNull("headers", headers)
+    html.attrNotNull("abbr", abbr)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</th>")
 
   /** The `<td>` element: Table data cell.
     *
@@ -1070,11 +1595,20 @@ object HtmlElements:
     * '''Common attributes:''' `colspan`, `rowspan`, `headers`, `id`, `class`
     *
     * @example
-    *   td("colspan" := "2"):
-    *     text("Merged cell")
+    *   td("colspan" := "2"): text("Merged cell")
     */
-  inline def td(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("td")(attrs*)(nested)
+  @nowarn
+  def td(id: String = null, `class`: String = null, colspan: String = null, rowspan: String = null, headers: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<td")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("colspan", colspan)
+    html.attrNotNull("rowspan", rowspan)
+    html.attrNotNull("headers", headers)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</td>")
 
   /** The `<col>` element: Table column.
     *
@@ -1085,8 +1619,17 @@ object HtmlElements:
     * @example
     *   col("span" := "2", "class" := "numeric")
     */
-  inline def col(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("col")(attrs*)(nested)
+  @nowarn
+  def col(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<col")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("span", span)
+    html.attrNotNull("width", width)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</col>")
 
   /** The `<colgroup>` element: Table column group.
     *
@@ -1095,11 +1638,19 @@ object HtmlElements:
     * '''Common attributes:''' `span`, `id`, `class`
     *
     * @example
-    *   colgroup("span" := "3"):
-    *     col("class" := "wide")
+    *   colgroup("span" := "3"): col("class" := "wide")
     */
-  inline def colgroup(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("colgroup")(attrs*)(nested)
+  @nowarn
+  def colgroup(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<colgroup")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("span", span)
+    html.attrNotNull("width", width)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</colgroup>")
 
   /** The `<form>` element: Form.
     *
@@ -1108,11 +1659,24 @@ object HtmlElements:
     * '''Common attributes:''' `action`, `method`, `enctype`, `name`, `novalidate`, `autocomplete`, `target`
     *
     * @example
-    *   form("action" := "/login", "method" := "post"):
-    *     input("type" := "text", "name" := "email")
+    *   form("action" := "/login", "method" := "post"): input("type" := "text", "name" := "email")
     */
-  inline def form(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("form")(attrs*)(nested)
+  @nowarn
+  def form(id: String = null, `class`: String = null, action: String = null, method: String = null, enctype: String = null, name: String = null, novalidate: String = null, autocomplete: String = null, target: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<form")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("action", action)
+    html.attrNotNull("method", method)
+    html.attrNotNull("enctype", enctype)
+    html.attrNotNull("name", name)
+    html.attrNotNull("novalidate", novalidate)
+    html.attrNotNull("autocomplete", autocomplete)
+    html.attrNotNull("target", target)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</form>")
 
   /** The `<label>` element: Form label.
     *
@@ -1121,23 +1685,51 @@ object HtmlElements:
     * '''Common attributes:''' `for`, `form`, `id`, `class`
     *
     * @example
-    *   label("for" := "email"):
-    *     text("Email")
+    *   label("for" := "email"): text("Email")
     */
-  inline def label(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("label")(attrs*)(nested)
+  @nowarn
+  def label(id: String = null, `class`: String = null, `for`: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<label")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("for", `for`)
+    html.attrNotNull("form", form)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</label>")
 
   /** The `<input>` element: Form input control.
     *
     * '''Common usage:''' Collect text, choices, files, or buttons depending on `type`.
     *
-    * '''Common attributes:''' `type`, `name`, `value`, `placeholder`, `required`, `disabled`, `checked`, `min`, `max`, `step`, `pattern`, `autocomplete`
+    * '''Common attributes:''' `type`, `name`, `value`, `placeholder`, `required`, `disabled`, `checked`, `min`, `max`,
+    * `step`, `pattern`, `autocomplete`
     *
     * @example
     *   input("type" := "email", "name" := "email", "required" := "required")
     */
-  inline def input(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("input")(attrs*)(nested)
+  @nowarn
+  def input(id: String = null, `class`: String = null, `type`: String = null, name: String = null, value: String = null, placeholder: String = null, required: String = null, disabled: String = null, checked: String = null, min: String = null, max: String = null, step: String = null, pattern: String = null, autocomplete: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<input")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("value", value)
+    html.attrNotNull("placeholder", placeholder)
+    html.attrNotNull("required", required)
+    html.attrNotNull("disabled", disabled)
+    html.attrNotNull("checked", checked)
+    html.attrNotNull("min", min)
+    html.attrNotNull("max", max)
+    html.attrNotNull("step", step)
+    html.attrNotNull("pattern", pattern)
+    html.attrNotNull("autocomplete", autocomplete)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</input>")
 
   /** The `<textarea>` element: Multiline text input.
     *
@@ -1146,11 +1738,25 @@ object HtmlElements:
     * '''Common attributes:''' `name`, `rows`, `cols`, `placeholder`, `required`, `disabled`, `maxlength`, `wrap`
     *
     * @example
-    *   textarea("name" := "message", "rows" := "4"):
-    *     text("Hello")
+    *   textarea("name" := "message", "rows" := "4"): text("Hello")
     */
-  inline def textarea(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("textarea")(attrs*)(nested)
+  @nowarn
+  def textarea(id: String = null, `class`: String = null, name: String = null, rows: String = null, cols: String = null, placeholder: String = null, required: String = null, disabled: String = null, maxlength: String = null, wrap: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<textarea")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("rows", rows)
+    html.attrNotNull("cols", cols)
+    html.attrNotNull("placeholder", placeholder)
+    html.attrNotNull("required", required)
+    html.attrNotNull("disabled", disabled)
+    html.attrNotNull("maxlength", maxlength)
+    html.attrNotNull("wrap", wrap)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</textarea>")
 
   /** The `<button>` element: Button control.
     *
@@ -1159,11 +1765,24 @@ object HtmlElements:
     * '''Common attributes:''' `type`, `name`, `value`, `disabled`, `form`, `formaction`, `autofocus`
     *
     * @example
-    *   button("type" := "submit", "class" := "btn"):
-    *     text("Save")
+    *   button("type" := "submit", "class" := "btn"): text("Save")
     */
-  inline def button(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("button")(attrs*)(nested)
+  @nowarn
+  def button(id: String = null, `class`: String = null, `type`: String = null, name: String = null, value: String = null, disabled: String = null, form: String = null, formaction: String = null, autofocus: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<button")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("value", value)
+    html.attrNotNull("disabled", disabled)
+    html.attrNotNull("form", form)
+    html.attrNotNull("formaction", formaction)
+    html.attrNotNull("autofocus", autofocus)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</button>")
 
   /** The `<select>` element: Option list.
     *
@@ -1172,14 +1791,24 @@ object HtmlElements:
     * '''Common attributes:''' `name`, `multiple`, `required`, `disabled`, `size`, `autocomplete`
     *
     * @example
-    *   select("name" := "plan"):
-    *     option("value" := "free"):
-    *       text("Free")
-    *     option("value" := "pro", "selected" := "selected"):
-    *       text("Pro")
+    *   select("name" := "plan"): option("value" := "free"): text("Free") option("value" := "pro", "selected" :=
+    *   "selected"): text("Pro")
     */
-  inline def select(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("select")(attrs*)(nested)
+  @nowarn
+  def select(id: String = null, `class`: String = null, name: String = null, multiple: String = null, required: String = null, disabled: String = null, size: String = null, autocomplete: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<select")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("multiple", multiple)
+    html.attrNotNull("required", required)
+    html.attrNotNull("disabled", disabled)
+    html.attrNotNull("size", size)
+    html.attrNotNull("autocomplete", autocomplete)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</select>")
 
   /** The `<option>` element: Select option.
     *
@@ -1188,11 +1817,21 @@ object HtmlElements:
     * '''Common attributes:''' `value`, `label`, `selected`, `disabled`
     *
     * @example
-    *   option("value" := "ca"):
-    *     text("Canada")
+    *   option("value" := "ca"): text("Canada")
     */
-  inline def option(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("option")(attrs*)(nested)
+  @nowarn
+  def option(id: String = null, `class`: String = null, value: String = null, label: String = null, selected: String = null, disabled: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<option")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("value", value)
+    html.attrNotNull("label", label)
+    html.attrNotNull("selected", selected)
+    html.attrNotNull("disabled", disabled)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</option>")
 
   /** The `<optgroup>` element: Grouped options.
     *
@@ -1201,12 +1840,19 @@ object HtmlElements:
     * '''Common attributes:''' `label`, `disabled`
     *
     * @example
-    *   optgroup("label" := "North America"):
-    *     option("value" := "ca"):
-    *       text("Canada")
+    *   optgroup("label" := "North America"): option("value" := "ca"): text("Canada")
     */
-  inline def optgroup(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("optgroup")(attrs*)(nested)
+  @nowarn
+  def optgroup(id: String = null, `class`: String = null, label: String = null, disabled: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<optgroup")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("label", label)
+    html.attrNotNull("disabled", disabled)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</optgroup>")
 
   /** The `<fieldset>` element: Form field group.
     *
@@ -1215,13 +1861,20 @@ object HtmlElements:
     * '''Common attributes:''' `disabled`, `name`, `form`, `id`, `class`
     *
     * @example
-    *   fieldset:
-    *     legend:
-    *       text("Shipping")
-    *     input("type" := "text", "name" := "address")
+    *   fieldset: legend: text("Shipping") input("type" := "text", "name" := "address")
     */
-  inline def fieldset(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("fieldset")(attrs*)(nested)
+  @nowarn
+  def fieldset(id: String = null, `class`: String = null, disabled: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<fieldset")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("disabled", disabled)
+    html.attrNotNull("name", name)
+    html.attrNotNull("form", form)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</fieldset>")
 
   /** The `<legend>` element: Fieldset caption.
     *
@@ -1230,10 +1883,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   legend:
-    *     text("Account details")
+    *   legend: text("Account details")
     */
-  inline def legend(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
+  @nowarn
+  def legend(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<legend")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</legend>")
     elem("legend")(attrs*)(nested)
 
   /** The `<datalist>` element: Input suggestions.
@@ -1243,12 +1903,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   datalist("id" := "browsers"):
-    *     option("value" := "Chrome")
-    *     option("value" := "Firefox")
+    *   datalist("id" := "browsers"): option("value" := "Chrome") option("value" := "Firefox")
     */
-  inline def datalist(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("datalist")(attrs*)(nested)
+  @nowarn
+  def datalist(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<datalist")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</datalist>")
 
   /** The `<output>` element: Calculation result.
     *
@@ -1257,11 +1922,20 @@ object HtmlElements:
     * '''Common attributes:''' `for`, `name`, `form`, `id`, `class`
     *
     * @example
-    *   output("name" := "total", "for" := "qty price"):
-    *     text("0")
+    *   output("name" := "total", "for" := "qty price"): text("0")
     */
-  inline def output(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("output")(attrs*)(nested)
+  @nowarn
+  def output(id: String = null, `class`: String = null, `for`: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<output")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("for", `for`)
+    html.attrNotNull("name", name)
+    html.attrNotNull("form", form)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</output>")
 
   /** The `<progress>` element: Task progress.
     *
@@ -1272,8 +1946,17 @@ object HtmlElements:
     * @example
     *   progress("value" := "70", "max" := "100")
     */
-  inline def progress(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("progress")(attrs*)(nested)
+  @nowarn
+  def progress(id: String = null, `class`: String = null, value: String = null, max: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<progress")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("value", value)
+    html.attrNotNull("max", max)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</progress>")
 
   /** The `<meter>` element: Scalar measurement.
     *
@@ -1284,8 +1967,21 @@ object HtmlElements:
     * @example
     *   meter("value" := "0.6", "min" := "0", "max" := "1")
     */
-  inline def meter(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("meter")(attrs*)(nested)
+  @nowarn
+  def meter(id: String = null, `class`: String = null, value: String = null, min: String = null, max: String = null, low: String = null, high: String = null, optimum: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<meter")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("value", value)
+    html.attrNotNull("min", min)
+    html.attrNotNull("max", max)
+    html.attrNotNull("low", low)
+    html.attrNotNull("high", high)
+    html.attrNotNull("optimum", optimum)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</meter>")
 
   /** The `<details>` element: Disclosure widget.
     *
@@ -1294,14 +1990,19 @@ object HtmlElements:
     * '''Common attributes:''' `open`, `name`, `id`, `class`
     *
     * @example
-    *   details:
-    *     summary:
-    *       text("More info")
-    *     p:
-    *       text("Hidden details.")
+    *   details: summary: text("More info") p: text("Hidden details.")
     */
-  inline def details(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("details")(attrs*)(nested)
+  @nowarn
+  def details(id: String = null, `class`: String = null, open: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<details")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("open", open)
+    html.attrNotNull("name", name)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</details>")
 
   /** The `<summary>` element: Details summary.
     *
@@ -1310,11 +2011,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   summary:
-    *     text("Click to expand")
+    *   summary: text("Click to expand")
     */
-  inline def summary(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("summary")(attrs*)(nested)
+  @nowarn
+  def summary(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<summary")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</summary>")
 
   /** The `<dialog>` element: Modal or non-modal dialog.
     *
@@ -1323,14 +2030,18 @@ object HtmlElements:
     * '''Common attributes:''' `open`, `id`, `class`
     *
     * @example
-    *   dialog("id" := "confirm"):
-    *     p:
-    *       text("Are you sure?")
-    *     button("type" := "button"):
-    *       text("Close")
+    *   dialog("id" := "confirm"): p: text("Are you sure?") button("type" := "button"): text("Close")
     */
-  inline def dialog(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("dialog")(attrs*)(nested)
+  @nowarn
+  def dialog(id: String = null, `class`: String = null, open: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<dialog")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("open", open)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</dialog>")
 
   /** The `<template>` element: Inert template content.
     *
@@ -1339,13 +2050,17 @@ object HtmlElements:
     * '''Common attributes:''' `id`, `class`
     *
     * @example
-    *   template("id" := "row-template"):
-    *     tr:
-    *       td:
-    *         text("Placeholder")
+    *   template("id" := "row-template"): tr: td: text("Placeholder")
     */
-  inline def template(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("template")(attrs*)(nested)
+  @nowarn
+  def template(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<template")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</template>")
 
   /** The `<menu>` element: Toolbar or context menu.
     *
@@ -1354,12 +2069,19 @@ object HtmlElements:
     * '''Common attributes:''' `type`, `label`, `id`, `class`
     *
     * @example
-    *   menu("type" := "toolbar"):
-    *     button("type" := "button"):
-    *       text("Copy")
+    *   menu("type" := "toolbar"): button("type" := "button"): text("Copy")
     */
-  inline def menu(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("menu")(attrs*)(nested)
+  @nowarn
+  def menu(id: String = null, `class`: String = null, `type`: String = null, label: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<menu")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("type", `type`)
+    html.attrNotNull("label", label)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</menu>")
 
   /** The `<slot>` element: Shadow DOM slot.
     *
@@ -1368,10 +2090,17 @@ object HtmlElements:
     * '''Common attributes:''' `name`, `id`, `class`
     *
     * @example
-    *   slot("name" := "title"):
-    *     text("Default title")
+    *   slot("name" := "title"): text("Default title")
     */
-  inline def slot(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using Html): Unit =
-    elem("slot")(attrs*)(nested)
+  @nowarn
+  def slot(id: String = null, `class`: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+    html.append("<slot")
+    html.attrNotNull("id", id)
+    html.attrNotNull("class", `class`)
+    html.attrNotNull("name", name)
+    html.foreach(attrs)
+    html.append('>')
+    nested.apply
+    html.append("</slot>")
 
 end HtmlElements

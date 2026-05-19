@@ -7,13 +7,11 @@ import SampleComponents.*
 
 class SamplePagesSuite extends FunSuite:
   import hotmetal.Html.*
+  import hotmetal.HtmlElements.*
 
   test("div helper matches elem div output"):
     val rendered = Html:
-      div(
-        "class" := "grid gap-4",
-        "id" := "demo"
-      ):
+      div(`class` = "grid gap-4", id = "demo"):
         text("hello")
 
     assertEquals(
@@ -110,4 +108,3 @@ class SamplePagesSuite extends FunSuite:
   private def count(str: String, needle: String): Int =
     if needle.isEmpty then 0
     else str.sliding(needle.length).count(_ == needle)
-

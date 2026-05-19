@@ -2,6 +2,7 @@ package hotmetal.samples
 
 import hotmetal.Html
 import hotmetal.Html.*
+import hotmetal.HtmlElements.*
 
 final case class NavItem( //
     label: String,
@@ -110,11 +111,6 @@ object SampleComponents:
     NavItem("Support", "#support")
   )
 
-  inline def div(inline attrs: (HtmlFn)*)(inline nested: HtmlFn = ())(using
-      Html
-  ): Unit =
-    elem("div")(attrs*)(nested)
-
   def baseLayout(
       title: String,
       currentPath: String,
@@ -155,11 +151,9 @@ object SampleComponents:
         <body class="$bodyClass">
     """
     topNav(navItems, currentPath)
-    div(
-      "class" := "mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8"
-    ):
-      if flashes.nonEmpty then flashMessages(flashes)
+    div(`class` = "mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8"):
       content
+      if flashes.nonEmpty then flashMessages(flashes)
       footer()
     html"""
         </body>
@@ -238,7 +232,7 @@ object SampleComponents:
     html"""
         </nav>
     """
-    div("class" := "mt-6 rounded-2xl bg-slate-900 p-4 text-white"):
+    div(`class` = "mt-6 rounded-2xl bg-slate-900 p-4 text-white"):
       html"""<p class="text-sm font-semibold">Component-driven UI</p>"""
       html"""
         <p class="mt-2 text-sm text-slate-300">
@@ -285,7 +279,7 @@ object SampleComponents:
       html"</section>"
 
   def textField(field: TextField)(using Html): Unit =
-    div("class" := "space-y-2"):
+    div(`class` = "space-y-2"):
       fieldLabel(field.id, field.label, field.required)
       html"""
         <input
@@ -312,7 +306,7 @@ object SampleComponents:
       fieldMessages(field.helpText, field.error)
 
   def selectField(field: SelectField)(using Html): Unit =
-    div("class" := "space-y-2"):
+    div(`class` = "space-y-2"):
       fieldLabel(field.id, field.label, field.required)
       html"""
         <select
@@ -395,7 +389,7 @@ object SampleComponents:
       html"""
         <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       """
-      div("class" := "flex items-start justify-between gap-3"):
+      div(`class` = "flex items-start justify-between gap-3"):
         div():
           html"""<p class="text-sm text-slate-500">${card.title}</p>"""
           html"""<p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900">${card.value}</p>"""
@@ -420,10 +414,8 @@ object SampleComponents:
   def dataTable(columns: Seq[TableColumn], rows: Seq[TableRow])(using
       Html
   ): Unit =
-    div(
-      "class" := "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
-    ):
-      div("class" := "overflow-x-auto"):
+    div(`class` = "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"):
+      div(`class` = "overflow-x-auto"):
         html"""
           <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50">
@@ -470,15 +462,13 @@ object SampleComponents:
       html"""
         <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       """
-      div(
-        "class" := "flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-      ):
-        div("class" := "min-w-0 flex-1"):
-          div("class" := "flex items-center gap-2"):
+      div(`class` = "flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"):
+        div(`class` = "min-w-0 flex-1"):
+          div(`class` = "flex items-center gap-2"):
             html"""<h3 class="text-lg font-semibold text-slate-900">${product.name}</h3>"""
             html"""<span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">${product.tag}</span>"""
           html"""<p class="mt-2 text-sm text-slate-500">${product.description}</p>"""
-        div("class" := "grid gap-2 text-sm text-slate-600 sm:text-right"):
+        div(`class` = "grid gap-2 text-sm text-slate-600 sm:text-right"):
           html"""<span class="text-lg font-semibold text-slate-900">${product.price}</span>"""
           html"""<span>Qty ${product.quantity}</span>"""
       html"""
@@ -500,7 +490,7 @@ object SampleComponents:
         )}">
           <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">${tier.name}</p>
       """
-      div("class" := "mt-4 flex items-end gap-2"):
+      div(`class` = "mt-4 flex items-end gap-2"):
         html"""<span class="text-4xl font-black tracking-tight text-slate-900">${tier.price}</span>"""
         html"""<span class="pb-1 text-sm text-slate-500">per month</span>"""
       html"""
@@ -579,9 +569,7 @@ object SampleComponents:
     elem("footer")(
       "class" := "mt-10 border-t border-slate-200 px-1 py-6"
     ):
-      div(
-        "class" := "flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"
-      ):
+      div(`class` = "flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"):
         elem("p"):
           text("Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.")
 

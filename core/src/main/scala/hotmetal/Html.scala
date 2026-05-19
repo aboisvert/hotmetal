@@ -9,6 +9,7 @@ import java.nio.charset.Charset
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 import java.nio.charset.StandardCharsets.UTF_8
+import scala.annotation.nowarn
 
 /** Html supports efficient generation of Html content using the `html` interpolator or
   * elements/attributes provided by the `Dsl` object.
@@ -20,7 +21,12 @@ import java.nio.charset.StandardCharsets.UTF_8
   * standalone Html fragments that are cached and composed into larger documents.
   */
 final class Html(initialCapacity: Int = 256):
+  import Html.HtmlFn
+
   private final val buffer = java.lang.StringBuilder(initialCapacity)
+
+  inline def append(inline s: String): Unit =
+    buffer.append(s)
 
   inline def append(inline chars: CharSequence): Unit =
     buffer.append(chars)
@@ -53,6 +59,29 @@ final class Html(initialCapacity: Int = 256):
   def writeInto(out: OutputStream, charset: Charset = StandardCharsets.UTF_8): Unit =
     if buffer.length == 0 then return
     Html.writeEncoded(buffer, out, charset)
+
+
+  def attrNotNull(name: String, value: String): Unit =
+    if value != null then
+      append(' ')
+      append(name)
+      append('=')
+      append('"')
+      append(value)
+      append('"')
+      append(' ')
+
+  /** Append an attribute without a value, e.g. "disabled" or "required". */
+  def attrNoValue(name: String): Unit =
+    append(' ')
+    append(name)
+
+  @nowarn // html.foeach giving bogus warning
+  inline def foreach(inline attrs: HtmlFn*)(using Html): Unit =
+    var i = 0
+    while i < attrs.length do
+      attrs(i).apply
+      i += 1
 
 end Html // class
 
@@ -141,8 +170,8 @@ object Html:
     *
     * This method *does not* escape dangerous characters to prevent XSS.
     */
-  inline def unescaped(chars: CharSequence)(using buf: Html): Unit =
-    buf.append(chars)
+  inline def unescaped(s: String)(using buf: Html): Unit =
+    buf.append(s)
 
   def elem(name: String)(attrs: HtmlFn*)(nested: HtmlFn = ())(using
       buf: Html
@@ -161,13 +190,13 @@ object Html:
     buf.append('>')
 
   /** Append an attribute into the Html context. */
-  def attr(name: String, value: CharSequence)(using _html: Html): Unit =
-    _html.append(' ')
-    _html.append(name)
-    _html.append('=')
-    _html.append('"')
-    _html.append(value)
-    _html.append('"')
+  def attr(name: String, value: String)(using html: Html): Unit =
+    html.append(' ')
+    html.append(name)
+    html.append('=')
+    html.append('"')
+    html.append(value)
+    html.append('"')
 
   /** Append a sequence of attributes into the Html context. */
   inline def attrs(inline attrs: HtmlFn*)(using buf: Html): Unit =
@@ -306,18 +335,18 @@ object Html:
       *
       * Syntax { "color" := "red" } is equivalent to { attr("color", "red") }
       */
-    inline def :=(value: CharSequence)(using _html: Html): Unit =
+    inline def :=(value: String)(using Html): Unit =
       attr(s, value)
 
   /** Append a sequence of attribute values into the Attrs context.
     *
     * Syntax: "class" := attrValues("btn", "btn-primary")
     */
-  def attrValues(ss: String*)(using _html: Html): Unit =
+  def attrValues(ss: String*)(using html: Html): Unit =
     var i = 0
     while i < ss.length do
-      _html.append(ss(i))
-      if i < ss.length - 1 then _html.append(" ")
+      html.append(ss(i))
+      if i < ss.length - 1 then html.append(" ")
       i += 1
 
 end Html // object
