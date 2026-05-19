@@ -57,57 +57,81 @@ object DashboardPage:
         navItems = primaryNav,
         flashes = dashboardFlashes
       ):
-        html"""<main class="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">"""
-        sideBar(workspaceNav, "/dashboard")
-        div(`class` = "grid gap-6"):
-          metricCards(dashboardMetrics)
-          html"""<section class="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">"""
-          div(`class` = "space-y-4"):
-            div(`class` = "flex items-center justify-between"):
-              div():
-                html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Customer activity</p>"""
-                html"""<h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Live operations snapshot</h1>"""
-              html"""<button class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">Create campaign</button>"""
-            dataTable(activityColumns, activityRows)
-          html"""
-            <aside class="grid gap-4">
-              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" x-data="{ expanded: false }">
-          """
-          div(`class` = "flex items-center justify-between"):
-            div():
-              html"""<p class="text-sm text-slate-500">Owner notes</p>"""
-              html"""<p class="mt-1 text-lg font-semibold text-slate-900">Weekly launch review</p>"""
-            html"""
-              <button
-                type="button"
-                class="rounded-2xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700"
-                @click="expanded = !expanded"
-              >
-                Toggle details
-              </button>
-            """
-          html"""
-                <p class="mt-4 text-sm text-slate-600">
-                  The dashboard page combines reusable cards, tables, flash banners, and navigation components into a fuller layout.
-                </p>
-                <div x-show="expanded" x-transition class="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                  <p>Escalation follow-up includes the escaped account name Acme &lt;Admin&gt; in the table data.</p>
-                  <p class="mt-2">The note panel exists to showcase Alpine state in a content-heavy shell.</p>
-                </div>
-              </article>
-              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Shipping queue</p>
-                <ul class="mt-4 grid gap-3">
-                  ${
+        main(`class` = "grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]"):
+          sideBar(workspaceNav, "/dashboard")
+          div(`class` = "grid gap-6"):
+            metricCards(dashboardMetrics)
+            section(`class` = "grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]"):
+              div(`class` = "space-y-4"):
+                div(`class` = "flex items-center justify-between"):
+                  div():
+                    html"""
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                      Customer activity
+                    </p>
+                    <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">
+                      Live operations snapshot
+                    </h1>
+                    """
+
+                  html"""
+                  <button class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">
+                    Create campaign
+                  </button>
+                  """
+                dataTable(activityColumns, activityRows)
+
+              aside(`class` = "grid gap-4"):
+
+                article(
+                  `class` = "rounded-3xl border border-slate-200 bg-white p-5 shadow-sm",
+                  "x-data" := "{ expanded: false }"
+                ):
+                  html"""
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-sm text-slate-500">Owner notes</p>
+                      <p class="mt-1 text-lg font-semibold text-slate-900">Weekly launch review</p>
+                    </div>
+                    <button
+                      type="button"
+                      class="rounded-2xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700"
+                      @click="expanded = !expanded"
+                    >
+                      Toggle details
+                    </button>
+                  </div>
+                  <p class="mt-4 text-sm text-slate-600">
+                    The dashboard page combines reusable cards, tables, flash banners, and navigation components into a fuller layout.
+                  </p>
+                  <div
+                    class="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"
+                    x-show="expanded"
+                    x-transition
+                  >
+                    <p>Escalation follow-up includes the escaped account name Acme &lt;Admin&gt; in the table data.</p>
+                    <p class="mt-2">The note panel exists to showcase Alpine state in a content-heavy shell.</p>
+                  </div>
+                  """
+
+                article(`class` = "rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"):
+                  html"""
+                  <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Shipping queue
+                  </p>
+                  <ul class="mt-4 grid gap-3">
+                    ${ //
                     for item <- Seq(
-                      "Warehouse restock posted",
-                      "CSV import validated",
-                      "Fraud review waiting on analyst"
-                    ) do html"""<li class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">$item</li>"""
-                  }
-                </ul>
-              </article>
-            </aside>
-          </section>
-          """
-        html"</main>"
+                        "Warehouse restock posted",
+                        "CSV import validated",
+                        "Fraud review waiting on analyst"
+                      )
+                    do
+                      html"""
+                        <li class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                          $item
+                        </li>
+                      """
+                    }
+                  </ul>
+                  """
