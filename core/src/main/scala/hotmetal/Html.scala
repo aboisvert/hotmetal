@@ -76,7 +76,6 @@ final class Html(initialCapacity: Int = 256):
     append(' ')
     append(name)
 
-  @nowarn("msg=Discarded non-Unit value.*")
   inline def foreach(inline attrs: HtmlFn*)(using Html): Unit =
     var i = 0
     while i < attrs.length do
@@ -197,6 +196,9 @@ object Html:
     html.append('"')
     html.append(value)
     html.append('"')
+
+  inline def attrNoValue(name: String)(using html: Html): Unit =
+    html.attrNoValue(name)
 
   /** Append a sequence of attributes into the Html context. */
   inline def attrs(inline attrs: HtmlFn*)(using buf: Html): Unit =
