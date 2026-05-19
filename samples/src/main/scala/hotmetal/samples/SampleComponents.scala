@@ -2,7 +2,6 @@ package hotmetal.samples
 
 import hotmetal.Html
 import hotmetal.Html.*
-import hotmetal.HtmlElements.*
 
 final case class NavItem( //
     label: String,
@@ -149,13 +148,12 @@ object SampleComponents:
           </script>
         </head>
         <body class="$bodyClass">
-    """
-    topNav(navItems, currentPath)
-    div(`class` = "mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8"):
-      content
-      if flashes.nonEmpty then flashMessages(flashes)
-      footer()
-    html"""
+          ${topNav(navItems, currentPath)}
+      <div class="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        ${content}
+        ${if flashes.nonEmpty then flashMessages(flashes)}
+        ${footer()}
+          </div>
         </body>
       </html>
     """
@@ -171,15 +169,9 @@ object SampleComponents:
               <p class="text-xs text-slate-500">Samples and benchmarks</p>
             </div>
           </a>
-    """
-
-    html"""
           <nav class="ml-auto hidden items-center gap-2 md:flex">
             ${for item <- items do navLink(item, currentPath, compact = true)}
           </nav>
-    """
-
-    html"""
           <div class="relative hidden md:block">
             <button
               type="button"
@@ -215,9 +207,7 @@ object SampleComponents:
           </button>
         </div>
         <nav x-show="mobileOpen" x-transition class="mt-4 grid gap-2 md:hidden">
-    """
-    for item <- items do navLink(item, currentPath, compact = false)
-    html"""
+          ${for item <- items do navLink(item, currentPath, compact = false)}
         </nav>
       </header>
     """
@@ -227,61 +217,62 @@ object SampleComponents:
       <aside class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Workspace</p>
         <nav class="mt-4 grid gap-2">
-    """
-    for item <- items do navLink(item, currentPath, compact = false)
-    html"""
+          ${for item <- items do navLink(item, currentPath, compact = false)}
         </nav>
+        <div class="mt-6 rounded-2xl bg-slate-900 p-4 text-white">
+          <p class="text-sm font-semibold">Component-driven UI</p>
+          <p class="mt-2 text-sm text-slate-300">
+            Shared layouts, forms, flash messages, and generated lists all live in the samples project.
+          </p>
+        </div>
+      </aside>
     """
-    div(`class` = "mt-6 rounded-2xl bg-slate-900 p-4 text-white"):
-      html"""<p class="text-sm font-semibold">Component-driven UI</p>"""
-      html"""
-        <p class="mt-2 text-sm text-slate-300">
-          Shared layouts, forms, flash messages, and generated lists all live in the samples project.
-        </p>
-      """
-    html"</aside>"
 
   def flashMessages(messages: Seq[FlashMessage])(using Html): Unit =
     if messages.nonEmpty then
-      html"""<section class="mb-6 grid gap-3">"""
-      for message <- messages do
-        val toneClass = flashToneClass(message.kind)
-        html"""
-          <div
-            class="${attrValues(
-            "rounded-2xl",
-            "border",
-            "px-4",
-            "py-4",
-            toneClass
-          )}"
-            x-data="{ open: true }"
-            x-show="open"
-            x-transition
-          >
-            <div class="flex items-start gap-3">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold">${message.title}</p>
-                <p class="mt-1 text-sm">${message.body}</p>
-              </div>
-              ${if message.dismissible then html"""
-                    <button
-                      type="button"
-                      @click="open = false"
-                      class="rounded-lg px-2 py-1 text-sm font-medium"
-                    >
-                      Dismiss
-                    </button>
-                  """}
-            </div>
-          </div>
-        """
-      html"</section>"
+      html"""
+        <section class="mb-6 grid gap-3">
+          ${
+            for message <- messages do
+              val toneClass = flashToneClass(message.kind)
+              html"""
+                <div
+                  class="${attrValues(
+                  "rounded-2xl",
+                  "border",
+                  "px-4",
+                  "py-4",
+                  toneClass
+                )}"
+                  x-data="{ open: true }"
+                  x-show="open"
+                  x-transition
+                >
+                  <div class="flex items-start gap-3">
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-semibold">${message.title}</p>
+                      <p class="mt-1 text-sm">${message.body}</p>
+                    </div>
+                    ${if message.dismissible then html"""
+                      <button
+                        type="button"
+                        @click="open = false"
+                        class="rounded-lg px-2 py-1 text-sm font-medium"
+                      >
+                        Dismiss
+                      </button>
+                    """}
+                  </div>
+                </div>
+              """
+          }
+        </section>
+      """
 
   def textField(field: TextField)(using Html): Unit =
-    div(`class` = "space-y-2"):
-      fieldLabel(field.id, field.label, field.required)
-      html"""
+    html"""
+      <div class="space-y-2">
+        ${fieldLabel(field.id, field.label, field.required)}
         <input
           id="${field.id}"
           name="${field.name}"
@@ -300,15 +291,16 @@ object SampleComponents:
           if field.error.nonEmpty then "border-rose-300 bg-rose-50 text-rose-900"
           else "border-slate-200 bg-white text-slate-900"
         )}"
-          ${if field.required then "required" := "required"}
+          ${if field.required then html"required"}
         />
-      """
-      fieldMessages(field.helpText, field.error)
+        ${fieldMessages(field.helpText, field.error)}
+      </div>
+    """
 
   def selectField(field: SelectField)(using Html): Unit =
-    div(`class` = "space-y-2"):
-      fieldLabel(field.id, field.label, field.required)
-      html"""
+    html"""
+      <div class="space-y-2">
+        ${fieldLabel(field.id, field.label, field.required)}
         <select
           id="${field.id}"
           name="${field.name}"
@@ -325,17 +317,20 @@ object SampleComponents:
           if field.error.nonEmpty then "border-rose-300 text-rose-900"
           else "border-slate-200 text-slate-900"
         )}"
-          ${if field.required then "required" := "required"}
+          ${if field.required then html"required"}
         >
-      """
-      for option <- field.options do
-        html"""
-          <option value="${option.value}" ${
-            if option.value == field.selectedValue then "selected" := "selected"
-          }>${option.label}</option>
-        """
-      html"</select>"
-      fieldMessages(field.helpText, field.error)
+          ${
+            for option <- field.options do
+              html"""
+                <option value="${option.value}" ${if option.value == field.selectedValue then html"selected"}>
+                  ${option.label}
+                </option>
+              """
+          }
+        </select>
+        ${fieldMessages(field.helpText, field.error)}
+      </div>
+    """
 
   def checkboxField(field: CheckboxField)(using Html): Unit =
     html"""
@@ -345,13 +340,11 @@ object SampleComponents:
           name="${field.name}"
           type="checkbox"
           class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-500"
-          ${if field.checked then "checked" := "checked"}
+          ${if field.checked then html"checked"}
         />
         <span class="min-w-0 flex-1">
           <span class="block font-medium text-slate-900">${field.label}</span>
-    """
-    if field.helpText.nonEmpty then html"""<span class="mt-1 block text-slate-500">${field.helpText.get}</span>"""
-    html"""
+          ${if field.helpText.nonEmpty then html"""<span class="mt-1 block text-slate-500">${field.helpText.get}</span>"""}
         </span>
       </label>
     """
@@ -360,186 +353,204 @@ object SampleComponents:
     html"""
       <fieldset class="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <legend class="text-sm font-semibold text-slate-900">${group.label}</legend>
+        ${if group.helpText.nonEmpty then html"""<p class="text-sm text-slate-500">${group.helpText.get}</p>"""}
+        ${
+          for option <- group.options do
+            html"""
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                <input
+                  type="radio"
+                  name="${group.name}"
+                  value="${option.value}"
+                  class="mt-1 h-4 w-4 border-slate-300 text-brand-500"
+                  ${if option.value == group.selectedValue then html"checked"}
+                />
+                <span>
+                  <span class="block text-sm font-medium text-slate-900">${option.label}</span>
+                  ${if option.helpText.nonEmpty then html"""<span class="mt-1 block text-sm text-slate-500">${option.helpText.get}</span>"""}
+                </span>
+              </label>
+            """
+        }
+      </fieldset>
     """
-    if group.helpText.nonEmpty then html"""<p class="text-sm text-slate-500">${group.helpText.get}</p>"""
-    for option <- group.options do
-      html"""
-        <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3">
-          <input
-            type="radio"
-            name="${group.name}"
-            value="${option.value}"
-            class="mt-1 h-4 w-4 border-slate-300 text-brand-500"
-            ${if option.value == group.selectedValue then "checked" := "checked"}
-          />
-          <span>
-            <span class="block text-sm font-medium text-slate-900">${option.label}</span>
-      """
-      if option.helpText.nonEmpty then
-        html"""<span class="mt-1 block text-sm text-slate-500">${option.helpText.get}</span>"""
-      html"""
-          </span>
-        </label>
-      """
-    html"</fieldset>"
 
   def metricCards(cards: Seq[MetricCard])(using Html): Unit =
-    html"""<section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">"""
-    for card <- cards do
-      html"""
-        <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      """
-      div(`class` = "flex items-start justify-between gap-3"):
-        div():
-          html"""<p class="text-sm text-slate-500">${card.title}</p>"""
-          html"""<p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900">${card.value}</p>"""
-        html"""
-          <span class="${attrValues(
-            "rounded-full",
-            "px-3",
-            "py-1",
-            "text-xs",
-            "font-semibold",
-            metricToneClass(card.tone)
-          )}">
-            ${card.change}
-          </span>
-        """
-      html"""
-          <p class="mt-4 text-sm text-slate-500">${card.description}</p>
-        </article>
-      """
-    html"</section>"
+    html"""
+      <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        ${
+          for card <- cards do
+            html"""
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="text-sm text-slate-500">${card.title}</p>
+                    <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900">${card.value}</p>
+                  </div>
+                  <span class="${attrValues(
+                  "rounded-full",
+                  "px-3",
+                  "py-1",
+                  "text-xs",
+                  "font-semibold",
+                  metricToneClass(card.tone)
+                )}">
+                    ${card.change}
+                  </span>
+                </div>
+                <p class="mt-4 text-sm text-slate-500">${card.description}</p>
+              </article>
+            """
+        }
+      </section>
+    """
 
   def dataTable(columns: Seq[TableColumn], rows: Seq[TableRow])(using
       Html
   ): Unit =
-    div(`class` = "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"):
-      div(`class` = "overflow-x-auto"):
-        html"""
+    html"""
+      <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50">
               <tr>
-        """
-        for column <- columns do
-          html"""<th class="px-4 py-3 text-left font-semibold uppercase tracking-[0.2em] text-slate-500">${column.label}</th>"""
-        html"""
+                ${
+                  for column <- columns do
+                    html"""<th class="px-4 py-3 text-left font-semibold uppercase tracking-[0.2em] text-slate-500">${column.label}</th>"""
+                }
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-        """
-        for row <- rows do
-          html"<tr>"
-          var idx = 0
-          while idx < row.cells.length do
-            html"""<td class="px-4 py-3 text-slate-700">${row.cells(
-                idx
-              )}</td>"""
-            idx += 1
-          html"""
-            <td class="px-4 py-3">
-              <span class="${attrValues(
-              "rounded-full",
-              "px-3",
-              "py-1",
-              "text-xs",
-              "font-semibold",
-              statusToneClass(row.status)
-            )}">
-                ${row.status}
-              </span>
-            </td>
-          """
-          html"</tr>"
-        html"""
+              ${
+                for row <- rows do
+                  html"""
+                    <tr>
+                      ${
+                        var idx = 0
+                        val cells = row.cells
+                        while idx < cells.length do
+                          html"""<td class="px-4 py-3 text-slate-700">${cells(idx)}</td>"""
+                          idx += 1
+                        ()
+                      }
+                      <td class="px-4 py-3">
+                        <span class="${attrValues(
+                        "rounded-full",
+                        "px-3",
+                        "py-1",
+                        "text-xs",
+                        "font-semibold",
+                        statusToneClass(row.status)
+                      )}">
+                          ${row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  """
+              }
             </tbody>
           </table>
-        """
+        </div>
+      </div>
+    """
 
   def productList(products: Seq[Product])(using Html): Unit =
-    html"""<section class="grid gap-4">"""
-    for product <- products do
-      html"""
-        <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      """
-      div(`class` = "flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"):
-        div(`class` = "min-w-0 flex-1"):
-          div(`class` = "flex items-center gap-2"):
-            html"""<h3 class="text-lg font-semibold text-slate-900">${product.name}</h3>"""
-            html"""<span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">${product.tag}</span>"""
-          html"""<p class="mt-2 text-sm text-slate-500">${product.description}</p>"""
-        div(`class` = "grid gap-2 text-sm text-slate-600 sm:text-right"):
-          html"""<span class="text-lg font-semibold text-slate-900">${product.price}</span>"""
-          html"""<span>Qty ${product.quantity}</span>"""
-      html"""
-        </article>
-      """
-    html"</section>"
+    html"""
+      <section class="grid gap-4">
+        ${
+          for product <- products do
+            html"""
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-lg font-semibold text-slate-900">${product.name}</h3>
+                      <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">${product.tag}</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500">${product.description}</p>
+                  </div>
+                  <div class="grid gap-2 text-sm text-slate-600 sm:text-right">
+                    <span class="text-lg font-semibold text-slate-900">${product.price}</span>
+                    <span>Qty ${product.quantity}</span>
+                  </div>
+                </div>
+              </article>
+            """
+        }
+      </section>
+    """
 
   def pricingGrid(tiers: Seq[PricingTier])(using Html): Unit =
-    html"""<section class="grid gap-4 lg:grid-cols-3">"""
-    for tier <- tiers do
-      html"""
-        <article class="${attrValues(
-          "rounded-3xl",
-          "border",
-          "p-6",
-          "shadow-sm",
-          if tier.featured then "border-brand-200 bg-brand-50"
-          else "border-slate-200 bg-white"
-        )}">
-          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">${tier.name}</p>
-      """
-      div(`class` = "mt-4 flex items-end gap-2"):
-        html"""<span class="text-4xl font-black tracking-tight text-slate-900">${tier.price}</span>"""
-        html"""<span class="pb-1 text-sm text-slate-500">per month</span>"""
-      html"""
-          <p class="mt-4 text-sm text-slate-600">${tier.description}</p>
-          <ul class="mt-6 grid gap-3 text-sm text-slate-600">
-      """
-      for feature <- tier.features do
-        html"""<li class="flex items-start gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-brand-500"></span><span>${feature}</span></li>"""
-      html"""
-          </ul>
-          <button
-            type="button"
-            class="${attrValues(
-          "mt-6",
-          "w-full",
-          "rounded-2xl",
-          "px-4",
-          "py-3",
-          "text-sm",
-          "font-semibold",
-          if tier.featured then "bg-slate-900 text-white"
-          else "border border-slate-200 bg-white text-slate-900"
-        )}"
-          >
-            Start with ${tier.name}
-          </button>
-        </article>
-      """
-    html"</section>"
+    html"""
+      <section class="grid gap-4 lg:grid-cols-3">
+        ${
+          for tier <- tiers do
+            html"""
+              <article class="${attrValues(
+                "rounded-3xl",
+                "border",
+                "p-6",
+                "shadow-sm",
+                if tier.featured then "border-brand-200 bg-brand-50"
+                else "border-slate-200 bg-white"
+              )}">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">${tier.name}</p>
+                <div class="mt-4 flex items-end gap-2">
+                  <span class="text-4xl font-black tracking-tight text-slate-900">${tier.price}</span>
+                  <span class="pb-1 text-sm text-slate-500">per month</span>
+                </div>
+                <p class="mt-4 text-sm text-slate-600">${tier.description}</p>
+                <ul class="mt-6 grid gap-3 text-sm text-slate-600">
+                  ${
+                    for feature <- tier.features do
+                      html"""<li class="flex items-start gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-brand-500"></span><span>${feature}</span></li>"""
+                  }
+                </ul>
+                <button
+                  type="button"
+                  class="${attrValues(
+                "mt-6",
+                "w-full",
+                "rounded-2xl",
+                "px-4",
+                "py-3",
+                "text-sm",
+                "font-semibold",
+                if tier.featured then "bg-slate-900 text-white"
+                else "border border-slate-200 bg-white text-slate-900"
+              )}"
+                >
+                  Start with ${tier.name}
+                </button>
+              </article>
+            """
+        }
+      </section>
+    """
 
   def faqAccordion(items: Seq[FaqItem])(using Html): Unit =
-    html"""<section class="grid gap-3">"""
-    for item <- items do
-      html"""
-        <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" x-data="{ open: false }">
-          <button
-            type="button"
-            class="flex w-full items-center justify-between gap-4 text-left"
-            @click="open = !open"
-          >
-            <span class="text-base font-semibold text-slate-900">${item.question}</span>
-            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500" x-text="open ? 'Hide' : 'Show'"></span>
-          </button>
-          <div x-show="open" x-transition class="mt-3 text-sm leading-6 text-slate-600">
-            ${item.answer}
-          </div>
-        </article>
-      """
-    html"</section>"
+    html"""
+      <section class="grid gap-3">
+        ${
+          for item <- items do
+            html"""
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" x-data="{ open: false }">
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between gap-4 text-left"
+                  @click="open = !open"
+                >
+                  <span class="text-base font-semibold text-slate-900">${item.question}</span>
+                  <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500" x-text="open ? 'Hide' : 'Show'"></span>
+                </button>
+                <div x-show="open" x-transition class="mt-3 text-sm leading-6 text-slate-600">
+                  ${item.answer}
+                </div>
+              </article>
+            """
+        }
+      </section>
+    """
 
   private def navLink(item: NavItem, currentPath: String, compact: Boolean)(using
       Html
@@ -560,38 +571,35 @@ object SampleComponents:
       )}"
       >
         <span>${item.label}</span>
+        ${if item.badge.nonEmpty then html"""<span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">${item.badge.get}</span>"""}
+      </a>
     """
-    if item.badge.nonEmpty then
-      html"""<span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">${item.badge.get}</span>"""
-    html"</a>"
 
   private def footer()(using Html): Unit =
-    elem("footer")(
-      "class" := "mt-10 border-t border-slate-200 px-1 py-6"
-    ):
-      div(`class` = "flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"):
-        elem("p"):
-          text("Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.")
-
-        elem("nav")(
-          "class" := "flex flex-wrap items-center gap-4"
-        ):
-          for link <- footerNav do
-            elem("a")(
-              "href" := link.href,
-              "class" := "font-medium hover:text-slate-900"
-            ):
-              unescaped(link.label)
+    html"""
+      <footer class="mt-10 border-t border-slate-200 px-1 py-6">
+        <div class="flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+          <p>Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.</p>
+          <nav class="flex flex-wrap items-center gap-4">
+            ${
+              for link <- footerNav do
+                html"""
+                  <a href="${link.href}" class="font-medium hover:text-slate-900">${link.label}</a>
+                """
+            }
+          </nav>
+        </div>
+      </footer>
+    """
 
   private def fieldLabel(id: String, label: String, required: Boolean)(using
       Html
   ): Unit =
-    elem("label")(
-      "for" := id,
-      "class" := "block text-sm font-semibold text-slate-900"
-    ):
-      text(label)
-      if required then html""" <span class="font-medium text-rose-500">*</span>"""
+    html"""
+      <label for="$id" class="block text-sm font-semibold text-slate-900">
+        $label${if required then html""" <span class="font-medium text-rose-500">*</span>"""}
+      </label>
+    """
 
   private def fieldMessages(helpText: Option[String], error: Option[String])(using
       Html

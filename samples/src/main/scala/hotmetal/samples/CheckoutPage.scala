@@ -2,7 +2,6 @@ package hotmetal.samples
 
 import hotmetal.Html
 import hotmetal.Html.*
-import hotmetal.HtmlElements.*
 import SampleComponents.*
 import SamplePageNav.primaryNav
 
@@ -29,23 +28,23 @@ object CheckoutPage:
         navItems = primaryNav,
         flashes = checkoutFlashes
       ):
-        main(
-          `class` = "grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_420px]",
-          "x-data" := "{ promoOpen: false, quantity: 3 }"
-        ):
-          section(`class` = "space-y-6"):
-            div():
-              html"""<p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Checkout</p>"""
-              html"""<h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Compose a realistic purchase flow</h1>"""
-              html"""
-                <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-                  This sample uses shared field components, repeated product cards, and Alpine controls for promo visibility and quantity previews.
-                </p>
-              """
-            productList(checkoutProducts)
-            section(`class` = "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
-              div(`class` = "grid gap-5 md:grid-cols-2"):
-                textField(
+        html"""
+        <main
+          class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_420px]"
+          x-data="{ promoOpen: false, quantity: 3 }"
+        >
+          <section class="space-y-6">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Checkout</p>
+              <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Compose a realistic purchase flow</h1>
+              <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                This sample uses shared field components, repeated product cards, and Alpine controls for promo visibility and quantity previews.
+              </p>
+            </div>
+            ${productList(checkoutProducts)}
+            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="grid gap-5 md:grid-cols-2">
+                ${textField(
                   TextField(
                     id = "shipping-name",
                     name = "shippingName",
@@ -55,8 +54,8 @@ object CheckoutPage:
                     helpText = Some("This uses the shared text field renderer."),
                     required = true
                   )
-                )
-                textField(
+                )}
+                ${textField(
                   TextField(
                     id = "shipping-email",
                     name = "shippingEmail",
@@ -66,8 +65,8 @@ object CheckoutPage:
                     placeholder = "Add an order contact",
                     required = true
                   )
-                )
-                textField(
+                )}
+                ${textField(
                   TextField(
                     id = "address",
                     name = "address",
@@ -76,8 +75,8 @@ object CheckoutPage:
                     placeholder = "Start typing an address",
                     required = true
                   )
-                )
-                selectField(
+                )}
+                ${selectField(
                   SelectField(
                     id = "country",
                     name = "country",
@@ -90,8 +89,9 @@ object CheckoutPage:
                     selectedValue = "ca",
                     helpText = Some("Select menus are also rendered through a reusable component.")
                   )
-                )
-              checkboxField(
+                )}
+              </div>
+              ${checkboxField(
                 CheckboxField(
                   id = "billing-same",
                   name = "billingSame",
@@ -99,8 +99,8 @@ object CheckoutPage:
                   checked = true,
                   helpText = Some("Useful for demonstrating repeated conditional field groups.")
                 )
-              )
-              radioGroup(
+              )}
+              ${radioGroup(
                 RadioGroup(
                   name = "deliverySpeed",
                   label = "Delivery speed",
@@ -112,24 +112,26 @@ object CheckoutPage:
                     RadioOption("pickup", "Store pickup", Some("Collect from the sample warehouse."))
                   )
                 )
-              )
-          aside(`class` = "space-y-6"):
-            section(`class` = "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"):
-              div(`class` = "flex items-center justify-between"):
-                div():
-                  html"""<p class="text-sm font-semibold text-slate-500">Order total</p>"""
-                  html"""<p class="mt-1 text-3xl font-black tracking-tight text-slate-900">${"$537"}</p>"""
-                html"""
-                  <button
-                    type="button"
-                    class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
-                    @click="promoOpen = !promoOpen"
-                  >
-                    Promo code
-                  </button>
-                """
-              div(`class` = "mt-4 grid gap-3", "x-show" := "promoOpen", "x-transition" := ""):
-                textField(
+              )}
+            </section>
+          </section>
+          <aside class="space-y-6">
+            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-slate-500">Order total</p>
+                  <p class="mt-1 text-3xl font-black tracking-tight text-slate-900">${"$537"}</p>
+                </div>
+                <button
+                  type="button"
+                  class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+                  @click="promoOpen = !promoOpen"
+                >
+                  Promo code
+                </button>
+              </div>
+              <div class="mt-4 grid gap-3" x-show="promoOpen" x-transition>
+                ${textField(
                   TextField(
                     id = "promo",
                     name = "promo",
@@ -137,11 +139,18 @@ object CheckoutPage:
                     value = "HOTMETAL15",
                     placeholder = "Enter a code"
                   )
-                )
-                html"""<button type="button" class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white">Apply code</button>"""
-              div(`class` = "mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600"):
-                html"""<p>Package count preview: <span class="font-semibold text-slate-900" x-text="quantity"></span></p>"""
-                div(`class` = "mt-3 flex items-center gap-3"):
-                  html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = Math.max(1, quantity - 1)">-</button>"""
-                  html"""<button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = quantity + 1">+</button>"""
-                  html"""<span class="text-xs uppercase tracking-[0.2em] text-slate-400">Static Alpine demo</span>"""
+                )}
+                <button type="button" class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white">Apply code</button>
+              </div>
+              <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+                <p>Package count preview: <span class="font-semibold text-slate-900" x-text="quantity"></span></p>
+                <div class="mt-3 flex items-center gap-3">
+                  <button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = Math.max(1, quantity - 1)">-</button>
+                  <button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = quantity + 1">+</button>
+                  <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Static Alpine demo</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </main>
+        """
