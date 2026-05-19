@@ -1,3 +1,4 @@
+.bloop/
 .bsp
 .cursor/
 .metals/
@@ -7,6 +8,7 @@
 benchmarks/results/
 samples/generated-pages/
 
+project/.bloop/
 project/metals.sbt
 project/target/
 project/project/
