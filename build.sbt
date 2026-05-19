@@ -22,7 +22,7 @@ lazy val core = (project in file("core"))
   )
 
 lazy val samples = (project in file("samples"))
-  .dependsOn(core)
+  .dependsOn(core % "compile->compile;test->test")
   .settings(commonSettings)
   .settings(testSettings)
   .settings(

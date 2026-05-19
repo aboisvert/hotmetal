@@ -137,13 +137,12 @@ object HtmlElements:
     *   script(defer = true, src = "/app.js")
     */
   @nowarn
-  def script(defer: Boolean, src: String, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def script(defer: Boolean, src: String, attrs: HtmlFn*)(using html: Html): Unit =
     html.append("<script")
     if defer then html.attrNoValue("defer")
     html.attrNotNull("src", src)
     html.foreach(attrs)
     html.append(">\n")
-    nested.apply
     html.append("\n</script>\n")
 
   /** The `<script>` element: Executable script.
@@ -209,7 +208,6 @@ object HtmlElements:
     html.append('>')
     nested.apply
     html.append("</body>")
-    elem("body")(attrs*)(nested)
 
   /** The `<header>` element: Page or section header.
     *
@@ -644,7 +642,6 @@ object HtmlElements:
     html.append('>')
     nested.apply
     html.append("</b>")
-    elem("b")(attrs*)(nested)
 
   /** The `<i>` element: Italic text (presentational).
     *
@@ -960,14 +957,34 @@ object HtmlElements:
     *   img("src" := "/logo.svg", "alt" := "Logo")
     */
   @nowarn
-  def img(id: String = null, `class`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def img(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      alt: String = null,
+      width: String = null,
+      height: String = null,
+      loading: String = null,
+      decoding: String = null,
+      srcset: String = null,
+      sizes: String = null,
+      crossorigin: String = null,
+      attrs: HtmlFn*
+  )(using html: Html): Unit =
     html.append("<img")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
+    html.attrNotNull("src", src)
+    html.attrNotNull("alt", alt)
+    html.attrNotNull("width", width)
+    html.attrNotNull("height", height)
+    html.attrNotNull("loading", loading)
+    html.attrNotNull("decoding", decoding)
+    html.attrNotNull("srcset", srcset)
+    html.attrNotNull("sizes", sizes)
+    html.attrNotNull("crossorigin", crossorigin)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</img>")
+    html.append("/>")
 
   /** The `<picture>` element: Responsive image container.
     *
@@ -1008,7 +1025,7 @@ object HtmlElements:
       media: String = null,
       sizes: String = null,
       attrs: HtmlFn*
-  )(nested: HtmlFn)(using html: Html): Unit =
+  )(using html: Html): Unit =
     html.append("<source")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1018,9 +1035,7 @@ object HtmlElements:
     html.attrNotNull("media", media)
     html.attrNotNull("sizes", sizes)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</source>")
+    html.append("/>")
 
   /** The `<figure>` element: Illustration with optional caption.
     *
@@ -1160,7 +1175,7 @@ object HtmlElements:
       label: String = null,
       default: String = null,
       attrs: HtmlFn*
-  )(nested: HtmlFn)(using html: Html): Unit =
+  )(using html: Html): Unit =
     html.append("<track")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1170,9 +1185,7 @@ object HtmlElements:
     html.attrNotNull("label", label)
     html.attrNotNull("default", default)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</track>")
+    html.append("/>")
 
   /** The `<iframe>` element: Inline frame.
     *
@@ -1189,6 +1202,7 @@ object HtmlElements:
       `class`: String = null,
       src: String = null,
       name: String = null,
+      title: String = null,
       width: String = null,
       height: String = null,
       sandbox: String = null,
@@ -1196,12 +1210,13 @@ object HtmlElements:
       loading: String = null,
       referrerpolicy: String = null,
       attrs: HtmlFn*
-  )(nested: HtmlFn)(using html: Html): Unit =
+  )(using html: Html): Unit =
     html.append("<iframe")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
     html.attrNotNull("src", src)
     html.attrNotNull("name", name)
+    html.attrNotNull("title", title)
     html.attrNotNull("width", width)
     html.attrNotNull("height", height)
     html.attrNotNull("sandbox", sandbox)
@@ -1209,9 +1224,7 @@ object HtmlElements:
     html.attrNotNull("loading", loading)
     html.attrNotNull("referrerpolicy", referrerpolicy)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</iframe>")
+    html.append("/>")
 
   /** The `<embed>` element: Embedded external content.
     *
@@ -1223,7 +1236,15 @@ object HtmlElements:
     *   embed("src" := "/animation.swf", "type" := "application/x-shockwave-flash")
     */
   @nowarn
-  def embed(id: String = null, `class`: String = null, src: String = null, `type`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def embed(
+      id: String = null,
+      `class`: String = null,
+      src: String = null,
+      `type`: String = null,
+      width: String = null,
+      height: String = null,
+      attrs: HtmlFn*
+  )(using html: Html): Unit =
     html.append("<embed")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1232,9 +1253,7 @@ object HtmlElements:
     html.attrNotNull("width", width)
     html.attrNotNull("height", height)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</embed>")
+    html.append("/>")
 
   /** The `<object>` element: External resource object.
     *
@@ -1246,7 +1265,17 @@ object HtmlElements:
     *   `object`("data" := "/file.pdf", "type" := "application/pdf")
     */
   @nowarn
-  def `object`(id: String = null, `class`: String = null, data: String = null, `type`: String = null, width: String = null, height: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def `object`(
+      id: String = null,
+      `class`: String = null,
+      data: String = null,
+      `type`: String = null,
+      width: String = null,
+      height: String = null,
+      name: String = null,
+      form: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<object")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1271,16 +1300,16 @@ object HtmlElements:
     *   param("name" := "autoplay", "value" := "true")
     */
   @nowarn
-  def param(id: String = null, `class`: String = null, name: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def param(id: String = null, `class`: String = null, name: String = null, value: String = null, attrs: HtmlFn*)(using
+      html: Html
+  ): Unit =
     html.append("<param")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
     html.attrNotNull("name", name)
     html.attrNotNull("value", value)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</param>")
+    html.append("/>")
 
   /** The `<canvas>` element: Scripted drawing surface.
     *
@@ -1292,7 +1321,11 @@ object HtmlElements:
     *   canvas("id" := "chart", "width" := "400", "height" := "200")
     */
   @nowarn
-  def canvas(id: String = null, `class`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def canvas(id: String = null, `class`: String = null, width: String = null, height: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using
+      html: Html
+  ): Unit =
     html.append("<canvas")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1313,7 +1346,17 @@ object HtmlElements:
     *   svg("viewBox" := "0 0 24 24", "width" := "24", "height" := "24"): html"<circle cx='12' cy='12' r='10' />"
     */
   @nowarn
-  def svg(id: String = null, `class`: String = null, viewBox: String = null, width: String = null, height: String = null, xmlns: String = null, role: String = null, ariaLabel: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def svg(
+      id: String = null,
+      `class`: String = null,
+      viewBox: String = null,
+      width: String = null,
+      height: String = null,
+      xmlns: String = null,
+      role: String = null,
+      ariaLabel: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<svg")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1338,7 +1381,9 @@ object HtmlElements:
     *   ul("class" := "list-disc"): li: text("First") li: text("Second")
     */
   @nowarn
-  def ul(id: String = null, `class`: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def ul(id: String = null, `class`: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
+      html: Html
+  ): Unit =
     html.append("<ul")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1358,7 +1403,14 @@ object HtmlElements:
     *   ol("start" := "1"): li: text("Step one") li: text("Step two")
     */
   @nowarn
-  def ol(id: String = null, `class`: String = null, start: String = null, reversed: String = null, `type`: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def ol(
+      id: String = null,
+      `class`: String = null,
+      start: String = null,
+      reversed: String = null,
+      `type`: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<ol")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1380,7 +1432,9 @@ object HtmlElements:
     *   li("class" := "item"): text("List entry")
     */
   @nowarn
-  def li(id: String = null, `class`: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def li(id: String = null, `class`: String = null, value: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
+      html: Html
+  ): Unit =
     html.append("<li")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1446,7 +1500,6 @@ object HtmlElements:
     html.append('>')
     nested.apply
     html.append("</dd>")
-    elem("dd")(attrs*)(nested)
 
   /** The `<table>` element: Tabular data.
     *
@@ -1458,7 +1511,9 @@ object HtmlElements:
     *   table("class" := "min-w-full"): thead: tr: th: text("Name") tbody: tr: td: text("Ada")
     */
   @nowarn
-  def table(id: String = null, `class`: String = null, border: String = null, role: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def table(id: String = null, `class`: String = null, border: String = null, role: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using html: Html): Unit =
     html.append("<table")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1574,7 +1629,16 @@ object HtmlElements:
     *   th("scope" := "col"): text("Price")
     */
   @nowarn
-  def th(id: String = null, `class`: String = null, scope: String = null, colspan: String = null, rowspan: String = null, headers: String = null, abbr: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def th(
+      id: String = null,
+      `class`: String = null,
+      scope: String = null,
+      colspan: String = null,
+      rowspan: String = null,
+      headers: String = null,
+      abbr: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<th")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1598,7 +1662,14 @@ object HtmlElements:
     *   td("colspan" := "2"): text("Merged cell")
     */
   @nowarn
-  def td(id: String = null, `class`: String = null, colspan: String = null, rowspan: String = null, headers: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def td(
+      id: String = null,
+      `class`: String = null,
+      colspan: String = null,
+      rowspan: String = null,
+      headers: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<td")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1620,16 +1691,16 @@ object HtmlElements:
     *   col("span" := "2", "class" := "numeric")
     */
   @nowarn
-  def col(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def col(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(using
+      html: Html
+  ): Unit =
     html.append("<col")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
     html.attrNotNull("span", span)
     html.attrNotNull("width", width)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</col>")
+    html.append("/>")
 
   /** The `<colgroup>` element: Table column group.
     *
@@ -1641,7 +1712,9 @@ object HtmlElements:
     *   colgroup("span" := "3"): col("class" := "wide")
     */
   @nowarn
-  def colgroup(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def colgroup(id: String = null, `class`: String = null, span: String = null, width: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using html: Html): Unit =
     html.append("<colgroup")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1662,7 +1735,18 @@ object HtmlElements:
     *   form("action" := "/login", "method" := "post"): input("type" := "text", "name" := "email")
     */
   @nowarn
-  def form(id: String = null, `class`: String = null, action: String = null, method: String = null, enctype: String = null, name: String = null, novalidate: String = null, autocomplete: String = null, target: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def form(
+      id: String = null,
+      `class`: String = null,
+      action: String = null,
+      method: String = null,
+      enctype: String = null,
+      name: String = null,
+      novalidate: String = null,
+      autocomplete: String = null,
+      target: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<form")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1688,7 +1772,9 @@ object HtmlElements:
     *   label("for" := "email"): text("Email")
     */
   @nowarn
-  def label(id: String = null, `class`: String = null, `for`: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def label(id: String = null, `class`: String = null, `for`: String = null, form: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using html: Html): Unit =
     html.append("<label")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1710,7 +1796,23 @@ object HtmlElements:
     *   input("type" := "email", "name" := "email", "required" := "required")
     */
   @nowarn
-  def input(id: String = null, `class`: String = null, `type`: String = null, name: String = null, value: String = null, placeholder: String = null, required: String = null, disabled: String = null, checked: String = null, min: String = null, max: String = null, step: String = null, pattern: String = null, autocomplete: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def input(
+      id: String = null,
+      `class`: String = null,
+      `type`: String = null,
+      name: String = null,
+      value: String = null,
+      placeholder: String = null,
+      required: String = null,
+      disabled: String = null,
+      checked: String = null,
+      min: String = null,
+      max: String = null,
+      step: String = null,
+      pattern: String = null,
+      autocomplete: String = null,
+      attrs: HtmlFn*
+  )(using html: Html): Unit =
     html.append("<input")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1727,9 +1829,7 @@ object HtmlElements:
     html.attrNotNull("pattern", pattern)
     html.attrNotNull("autocomplete", autocomplete)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</input>")
+    html.append("/>")
 
   /** The `<textarea>` element: Multiline text input.
     *
@@ -1741,7 +1841,19 @@ object HtmlElements:
     *   textarea("name" := "message", "rows" := "4"): text("Hello")
     */
   @nowarn
-  def textarea(id: String = null, `class`: String = null, name: String = null, rows: String = null, cols: String = null, placeholder: String = null, required: String = null, disabled: String = null, maxlength: String = null, wrap: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def textarea(
+      id: String = null,
+      `class`: String = null,
+      name: String = null,
+      rows: String = null,
+      cols: String = null,
+      placeholder: String = null,
+      required: String = null,
+      disabled: String = null,
+      maxlength: String = null,
+      wrap: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<textarea")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1768,7 +1880,18 @@ object HtmlElements:
     *   button("type" := "submit", "class" := "btn"): text("Save")
     */
   @nowarn
-  def button(id: String = null, `class`: String = null, `type`: String = null, name: String = null, value: String = null, disabled: String = null, form: String = null, formaction: String = null, autofocus: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def button(
+      id: String = null,
+      `class`: String = null,
+      `type`: String = null,
+      name: String = null,
+      value: String = null,
+      disabled: String = null,
+      form: String = null,
+      formaction: String = null,
+      autofocus: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<button")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1795,7 +1918,17 @@ object HtmlElements:
     *   "selected"): text("Pro")
     */
   @nowarn
-  def select(id: String = null, `class`: String = null, name: String = null, multiple: String = null, required: String = null, disabled: String = null, size: String = null, autocomplete: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def select(
+      id: String = null,
+      `class`: String = null,
+      name: String = null,
+      multiple: String = null,
+      required: String = null,
+      disabled: String = null,
+      size: String = null,
+      autocomplete: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<select")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1820,7 +1953,15 @@ object HtmlElements:
     *   option("value" := "ca"): text("Canada")
     */
   @nowarn
-  def option(id: String = null, `class`: String = null, value: String = null, label: String = null, selected: String = null, disabled: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def option(
+      id: String = null,
+      `class`: String = null,
+      value: String = null,
+      label: String = null,
+      selected: String = null,
+      disabled: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn = ())(using html: Html): Unit =
     html.append("<option")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1843,7 +1984,13 @@ object HtmlElements:
     *   optgroup("label" := "North America"): option("value" := "ca"): text("Canada")
     */
   @nowarn
-  def optgroup(id: String = null, `class`: String = null, label: String = null, disabled: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def optgroup(
+      id: String = null,
+      `class`: String = null,
+      label: String = null,
+      disabled: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<optgroup")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1864,7 +2011,14 @@ object HtmlElements:
     *   fieldset: legend: text("Shipping") input("type" := "text", "name" := "address")
     */
   @nowarn
-  def fieldset(id: String = null, `class`: String = null, disabled: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def fieldset(
+      id: String = null,
+      `class`: String = null,
+      disabled: String = null,
+      name: String = null,
+      form: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<fieldset")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1894,7 +2048,6 @@ object HtmlElements:
     html.append('>')
     nested.apply
     html.append("</legend>")
-    elem("legend")(attrs*)(nested)
 
   /** The `<datalist>` element: Input suggestions.
     *
@@ -1925,7 +2078,14 @@ object HtmlElements:
     *   output("name" := "total", "for" := "qty price"): text("0")
     */
   @nowarn
-  def output(id: String = null, `class`: String = null, `for`: String = null, name: String = null, form: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def output(
+      id: String = null,
+      `class`: String = null,
+      `for`: String = null,
+      name: String = null,
+      form: String = null,
+      attrs: HtmlFn*
+  )(nested: HtmlFn)(using html: Html): Unit =
     html.append("<output")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1947,16 +2107,16 @@ object HtmlElements:
     *   progress("value" := "70", "max" := "100")
     */
   @nowarn
-  def progress(id: String = null, `class`: String = null, value: String = null, max: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def progress(id: String = null, `class`: String = null, value: String = null, max: String = null, attrs: HtmlFn*)(
+      using html: Html
+  ): Unit =
     html.append("<progress")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
     html.attrNotNull("value", value)
     html.attrNotNull("max", max)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</progress>")
+    html.append("/>")
 
   /** The `<meter>` element: Scalar measurement.
     *
@@ -1968,7 +2128,17 @@ object HtmlElements:
     *   meter("value" := "0.6", "min" := "0", "max" := "1")
     */
   @nowarn
-  def meter(id: String = null, `class`: String = null, value: String = null, min: String = null, max: String = null, low: String = null, high: String = null, optimum: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def meter(
+      id: String = null,
+      `class`: String = null,
+      value: String = null,
+      min: String = null,
+      max: String = null,
+      low: String = null,
+      high: String = null,
+      optimum: String = null,
+      attrs: HtmlFn*
+  )(using html: Html): Unit =
     html.append("<meter")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -1979,9 +2149,7 @@ object HtmlElements:
     html.attrNotNull("high", high)
     html.attrNotNull("optimum", optimum)
     html.foreach(attrs)
-    html.append('>')
-    nested.apply
-    html.append("</meter>")
+    html.append("/>")
 
   /** The `<details>` element: Disclosure widget.
     *
@@ -1993,7 +2161,9 @@ object HtmlElements:
     *   details: summary: text("More info") p: text("Hidden details.")
     */
   @nowarn
-  def details(id: String = null, `class`: String = null, open: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def details(id: String = null, `class`: String = null, open: String = null, name: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using html: Html): Unit =
     html.append("<details")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -2033,7 +2203,9 @@ object HtmlElements:
     *   dialog("id" := "confirm"): p: text("Are you sure?") button("type" := "button"): text("Close")
     */
   @nowarn
-  def dialog(id: String = null, `class`: String = null, open: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def dialog(id: String = null, `class`: String = null, open: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
+      html: Html
+  ): Unit =
     html.append("<dialog")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -2072,7 +2244,9 @@ object HtmlElements:
     *   menu("type" := "toolbar"): button("type" := "button"): text("Copy")
     */
   @nowarn
-  def menu(id: String = null, `class`: String = null, `type`: String = null, label: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def menu(id: String = null, `class`: String = null, `type`: String = null, label: String = null, attrs: HtmlFn*)(
+      nested: HtmlFn
+  )(using html: Html): Unit =
     html.append("<menu")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)
@@ -2093,7 +2267,9 @@ object HtmlElements:
     *   slot("name" := "title"): text("Default title")
     */
   @nowarn
-  def slot(id: String = null, `class`: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using html: Html): Unit =
+  def slot(id: String = null, `class`: String = null, name: String = null, attrs: HtmlFn*)(nested: HtmlFn)(using
+      html: Html
+  ): Unit =
     html.append("<slot")
     html.attrNotNull("id", id)
     html.attrNotNull("class", `class`)

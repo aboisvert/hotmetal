@@ -5,7 +5,7 @@ import munit.FunSuite
 
 import SampleComponents.*
 
-class SamplePagesSuite extends FunSuite:
+class SamplePagesSuite extends FunSuite with hotmetal.HtmlAssertions:
   import hotmetal.Html.*
   import hotmetal.HtmlElements.*
 
@@ -14,9 +14,9 @@ class SamplePagesSuite extends FunSuite:
       div(`class` = "grid gap-4", id = "demo"):
         text("hello")
 
-    assertEquals(
+    assertHtmlEquals(
       rendered.toString,
-      """<div class="grid gap-4" id="demo">hello</div>"""
+      """<div id="demo" class="grid gap-4">hello</div>"""
     )
 
   test("top navigation highlights the current page from shared nav data"):

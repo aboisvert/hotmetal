@@ -5,13 +5,13 @@ import munit.FunSuite
 import java.nio.charset.StandardCharsets
 import java.nio.charset.StandardCharsets.UTF_8
 
-class HtmlSuite extends FunSuite with CompileUtils:
+class HtmlSuite extends FunSuite with CompileUtils with HtmlAssertions:
   import Html.*
 
   test("Html interpolator - literal string"):
     val actual = Html:
       html"""<div></div>"""
-    assertEquals(
+    assertHtmlEquals(
       obtained = actual.toString,
       expected = """<div></div>"""
     )
@@ -19,7 +19,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
   test("Html interpolator - with interpolated (Int) value"):
     val div = Html:
       html"""<div>${1}</div>"""
-    assertEquals(
+    assertHtmlEquals(
       obtained = div.toString,
       expected = """<div>1</div>"""
     )
@@ -31,7 +31,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
     val div = Html:
       html"""<div>$nested</div>"""
 
-    assertEquals(
+    assertHtmlEquals(
       obtained = div.toString,
       expected = """<div>nestedValue</div>"""
     )
@@ -48,7 +48,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
       html"""<div>${nested}</div>"""
 
 
-    assertEquals(
+    assertHtmlEquals(
       obtained = div.toString,
       expected = """<div><span>nestedDef</span></div>"""
     )
@@ -79,7 +79,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
     val div = Html:
       html"""<div>${for i <- 1 to 2 do nested(i)}</div>"""
 
-    assertEquals(
+    assertHtmlEquals(
       obtained = div.toString,
       expected = """<div><span>1</span><span>2</span></div>"""
     )
@@ -90,8 +90,8 @@ class HtmlSuite extends FunSuite with CompileUtils:
         <div>${for i <- 1 to 2 do html"<span>$i</span>"}</div>
       """
 
-    assertEquals(
-      obtained = div.toString.trim,
+    assertHtmlEquals(
+      obtained = div.toString,
       expected = """<div><span>1</span><span>2</span></div>"""
     )
 
@@ -137,7 +137,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
   test("Html.toInputStream"):
     val div = Html:
       html"""<div>foo</div>"""
-    assertEquals(
+    assertHtmlEquals(
       obtained = String(div.toInputStream.readAllBytes(), StandardCharsets.UTF_8),
       expected = "<div>foo</div>"
     )
@@ -147,7 +147,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
       html"""<div>foo</div>"""
     val baos = java.io.ByteArrayOutputStream()
     div.writeInto(baos)
-    assertEquals(
+    assertHtmlEquals(
       obtained = baos.toString(StandardCharsets.UTF_8),
       expected = "<div>foo</div>"
     )
@@ -172,7 +172,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
         text("hello")
       )
 
-    assertEquals(
+    assertHtmlEquals(
       obtained = div.toString,
       expected = """<div class="foo" id="bar">hello</div>"""
     )
@@ -181,7 +181,7 @@ class HtmlSuite extends FunSuite with CompileUtils:
     val attributes = Seq("btn", "btn-primary")
     val div = Html:
       html"""<div class="${attrValues(attributes*)}">foo</div>"""
-    assertEquals(
+    assertHtmlEquals(
       obtained = String(div.toInputStream.readAllBytes(), StandardCharsets.UTF_8),
       expected = """<div class="btn btn-primary">foo</div>"""
     )
