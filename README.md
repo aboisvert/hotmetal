@@ -77,6 +77,73 @@ Then take a look at some sample pages,
 | **samples** | `samples/` | Example pages (dashboard, checkout, settings, landing) built with Hotmetal |
 | **benchmarks** | `benchmarks/` | JMH benchmarks (`hotmetal-benchmarks`) |
 
+## Using Hotmetal as a dependency
+
+Artifacts are published to [GitHub Packages](https://github.com/aboisvert/hotmetal/packages) as `com.github.aboisvert:hotmetal_3:<version>`.
+
+GitHub Packages may require authentication even for reads. Provide a GitHub personal access token with at least `read:packages` scope (and `repo` if the package is private).
+
+### sbt
+
+Add the resolver and dependency in `build.sbt` (or `project/*.sbt`):
+
+```scala
+resolvers += "GitHub Packages" at "https://maven.pkg.github.com/aboisvert/hotmetal"
+
+credentials += Credentials(
+  "GitHub Package Registry",
+  "maven.pkg.github.com",
+  sys.env.getOrElse("GITHUB_ACTOR", sys.env.getOrElse("GITHUB_USERNAME", "github")),
+  sys.env.getOrElse("GITHUB_TOKEN", "")
+)
+
+libraryDependencies += "com.github.aboisvert" %% "hotmetal" % "<version>"
+```
+
+Replace `<version>` with a released version (for example `0.1.0`).
+
+### scala-cli
+
+In your script or `project.scala`:
+
+```scala
+//> using scala 3.3.7
+//> using repository https://maven.pkg.github.com/aboisvert/hotmetal
+//> using dep com.github.aboisvert::hotmetal:<version>
+```
+
+Configure Coursier credentials in `~/.config/coursier/credentials.properties` (or via environment variables):
+
+```properties
+maven.pkg.github.com=${GITHUB_ACTOR:-github}:${GITHUB_TOKEN}
+```
+
+### Mill
+
+In `build.mill`:
+
+```scala
+import mill._
+import mill.scalalib._
+
+def hotmetalDep = ivy"com.github.aboisvert::hotmetal:<version>"
+
+// In your module:
+def repositoriesTask = Task {
+  Seq(
+    coursier.maven.MavenRepository("https://maven.pkg.github.com/aboisvert/hotmetal")
+  ) ++ coursier.Resolve.defaultRepositories
+}
+
+def coursierCredentials = coursier.Credentials(
+  "maven.pkg.github.com",
+  sys.env.getOrElse("GITHUB_ACTOR", sys.env.getOrElse("GITHUB_USERNAME", "github")),
+  sys.env.getOrElse("GITHUB_TOKEN", "")
+)
+```
+
+Set `GITHUB_TOKEN` in the environment before running Mill.
+
 ## Building and testing
 
 It is recommended you use ASDF and install system dependencies using `just install-dependencies`.
@@ -93,6 +160,38 @@ To run JMH benchmarks:
 
 ```bash
 sbt bench/jmh:run
+```
+
+## Releasing
+
+Releases use [sbt-release](https://github.com/sbt/sbt-release). The version is managed in [`version.sbt`](version.sbt) at the repository root.
+
+Prerequisites:
+
+- A clean git working tree (commit or stash local changes first).
+- `GITHUB_ACTOR` (or `GITHUB_USERNAME`) and `GITHUB_TOKEN` in the environment. The token needs `write:packages` (and `repo` if publishing from a private repository).
+
+From the repository root:
+
+```bash
+export GITHUB_ACTOR=your-github-username
+export GITHUB_TOKEN=ghp_...
+
+sbt release
+```
+
+The default release process runs tests, sets the release version in `version.sbt`, tags the commit (`v<version>`), publishes the `core` module to GitHub Packages, bumps to the next snapshot version, and pushes commits and tags.
+
+Non-interactive release with defaults:
+
+```bash
+sbt "release with-defaults"
+```
+
+To publish manually without a full release:
+
+```bash
+sbt core/publish
 ```
 
 ## Status
