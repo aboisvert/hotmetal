@@ -60,8 +60,8 @@ class Tutorial extends FunSuite:
 
   /** The code above is valid Hotmetal!
     *
-    * All the elements such as `htmlRoot`, `head`, `body`, `standardHeader` are all fragments that
-    * are defined either as `val`s (static html) or `def`s. (dynamic)
+    * All the interpolated sections (e.g. `$tailwindCss`, `$htmxJs`, `$standardHeader`, `$mainSection`, `$standardFooter`) are HTML fragments
+    * that are defined either as `val`s (static html) or `def`s. (dynamic)
     *
     * Here is what `standardHeader` could look like:
     */
@@ -120,6 +120,27 @@ class Tutorial extends FunSuite:
         bullet(i)
       }</div>
     """
+
+    /** It is important to note that HTML generation in HTML is a side effect.   Components are written in imperative style,
+      * not functional style.  This means code does not typically use `map` to transform collections of data into HTML fragments
+      * but rather uses `for` loops or `foreach` to generate the HTML fragments.
+      *
+      * (Don't worry, if you use `map` in an Html interpolator, Hotmetal will warn you about it... at compile time!)
+      *
+      * The reason for this is mainly efficiency.  The Html context is a builder that appends content to a StringBuilder.
+      * Appending to a StringBuilder is much more efficient than building a new String for each fragment.
+      *
+      * It is still possible to compose HTML fragments by generating Html instances and interpolating them into a parent Html instance.
+      *
+      * Here is an example of how to compose HTML fragments:
+      *
+      */
+
+    val myFragment = Html:
+      html"<p>Hello, world!</p>"
+
+    val myDocument = Html:
+      html"""<html><body>$myFragment</body></html>"""
 
     /** You get the idea.
       *
