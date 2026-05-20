@@ -2,6 +2,8 @@
 
 Hotmetal is a Scala library for generating HTML with an `html` string interpolator and a lightweight DSL. It uses a mutable `Html` builder context so fragments write directly into a `StringBuilder` instead of allocating many intermediate strings.
 
+[Github Home Page](https://github.com/aboisvert/hotmetal)
+
 ## Quick example
 
 ```scala
@@ -95,4 +97,6 @@ sbt bench/jmh:run
 
 ## Status
 
-This project is at `0.1.0-SNAPSHOT` and is under active development. Feedback and contributions are welcome.
+This project has been used in production for several high-volume websites (including https://fanstake.com).  It is reliable and stable however the pre-1.0 version number indicates that no backward/forward source compatibility promise is made at this time.
+
+Feedback and contributions are welcome.
