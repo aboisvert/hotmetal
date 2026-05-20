@@ -1,0 +1,473 @@
+<!doctype html>
+      <html lang="en" class="h-full bg-slate-50">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Checkout workspace</title>
+          <meta
+            name="description"
+            content="Sample Hotmetal pages that exercise layouts, forms, lists, cards, and Alpine.js interactions."
+          />
+          <script src="https://cdn.tailwindcss.com"></script>
+          <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+          <script>
+            tailwind.config = {
+              theme: {
+                extend: {
+                  colors: {
+                    brand: {
+                      50: "#eef2ff",
+                      500: "#6366f1",
+                      700: "#4338ca"
+                    }
+                  }
+                }
+              }
+            };
+          </script>
+        </head>
+        <body class="min-h-screen bg-slate-50 text-slate-900">
+          
+      <header class="sticky top-0 z-20 mb-6 rounded-3xl border border-slate-200 bg-white/90 px-4 py-4 shadow-sm backdrop-blur">
+        <div class="flex items-center gap-4" x-data="{ mobileOpen: false, profileOpen: false }">
+          <a href="/" class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-500 text-lg font-black text-white">H</div>
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-700">Hotmetal</p>
+              <p class="text-xs text-slate-500">Samples and benchmarks</p>
+            </div>
+          </a>
+          <nav class="ml-auto hidden items-center gap-2 md:flex">
+            
+      <a
+        href="dashboard.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Dashboard</span>
+        
+      </a>
+    
+      <a
+        href="checkout.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Checkout</span>
+        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">Live</span>
+      </a>
+    
+      <a
+        href="settings.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Settings</span>
+        
+      </a>
+    
+      <a
+        href="landing.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Launch</span>
+        
+      </a>
+    
+          </nav>
+          <div class="relative hidden md:block">
+            <button
+              type="button"
+              @click="profileOpen = !profileOpen"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700"
+            >
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">HM</span>
+              Demo team
+            </button>
+            <div
+              x-show="profileOpen"
+              x-transition
+              @click.outside="profileOpen = false"
+              class="absolute right-0 mt-3 w-64 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
+            >
+              <p class="text-sm font-semibold text-slate-900">Realistic static behavior</p>
+              <p class="mt-1 text-sm text-slate-500">This menu is driven entirely by Alpine.js state.</p>
+              <button
+                type="button"
+                @click="profileOpen = false"
+                class="mt-4 w-full rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white"
+              >
+                Close menu
+              </button>
+            </div>
+          </div>
+          <button
+            type="button"
+            @click="mobileOpen = !mobileOpen"
+            class="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 text-slate-600 md:hidden"
+          >
+            Menu
+          </button>
+        </div>
+        <nav x-show="mobileOpen" x-transition class="mt-4 grid gap-2 md:hidden">
+          
+      <a
+        href="dashboard.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Dashboard</span>
+        
+      </a>
+    
+      <a
+        href="checkout.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Checkout</span>
+        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">Live</span>
+      </a>
+    
+      <a
+        href="settings.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Settings</span>
+        
+      </a>
+    
+      <a
+        href="landing.html"
+        data-current="false"
+        class="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      >
+        <span>Launch</span>
+        
+      </a>
+    
+        </nav>
+      </header>
+    
+      <div class="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        
+        <main
+          class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_420px]"
+          x-data="{ promoOpen: false, quantity: 3 }"
+        >
+          <section class="space-y-6">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Checkout</p>
+              <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Compose a realistic purchase flow</h1>
+              <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                This sample uses shared field components, repeated product cards, and Alpine controls for promo visibility and quantity previews.
+              </p>
+            </div>
+            
+      <section class="grid gap-4">
+        
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-lg font-semibold text-slate-900">Alpine starter kit</h3>
+                      <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">Popular</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500">A compact bundle for interactive UI experiments.</p>
+                  </div>
+                  <div class="grid gap-2 text-sm text-slate-600 sm:text-right">
+                    <span class="text-lg font-semibold text-slate-900">$89</span>
+                    <span>Qty 1</span>
+                  </div>
+                </div>
+              </article>
+            
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-lg font-semibold text-slate-900">Tailwind reporting pack</h3>
+                      <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">Bundle</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500">Figma-ready layouts ported into Hotmetal-friendly components.</p>
+                  </div>
+                  <div class="grid gap-2 text-sm text-slate-600 sm:text-right">
+                    <span class="text-lg font-semibold text-slate-900">$149</span>
+                    <span>Qty 2</span>
+                  </div>
+                </div>
+              </article>
+            
+              <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-lg font-semibold text-slate-900">Hotmetal support hours</h3>
+                      <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">Service</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-500">A sample line item with intentionally rich copy and repeated markup.</p>
+                  </div>
+                  <div class="grid gap-2 text-sm text-slate-600 sm:text-right">
+                    <span class="text-lg font-semibold text-slate-900">$299</span>
+                    <span>Qty 1</span>
+                  </div>
+                </div>
+              </article>
+            
+      </section>
+    
+            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="grid gap-5 md:grid-cols-2">
+                
+      <div class="space-y-2">
+        
+      <label for="shipping-name" class="block text-sm font-semibold text-slate-900">
+        Contact name <span class="font-medium text-rose-500">*</span>
+      </label>
+    
+        <input
+          id="shipping-name"
+          name="shippingName"
+          type="text"
+          value="Jamie Rivera"
+          placeholder="Add the shipping contact"
+          class="block w-full rounded-2xl border px-4 py-3 text-sm shadow-sm border-slate-200 bg-white text-slate-900"
+          required
+        />
+        <p class="text-sm text-slate-500">This uses the shared text field renderer.</p>
+      </div>
+    
+                
+      <div class="space-y-2">
+        
+      <label for="shipping-email" class="block text-sm font-semibold text-slate-900">
+        Email address <span class="font-medium text-rose-500">*</span>
+      </label>
+    
+        <input
+          id="shipping-email"
+          name="shippingEmail"
+          type="email"
+          value="jamie@example.com"
+          placeholder="Add an order contact"
+          class="block w-full rounded-2xl border px-4 py-3 text-sm shadow-sm border-slate-200 bg-white text-slate-900"
+          required
+        />
+        
+      </div>
+    
+                
+      <div class="space-y-2">
+        
+      <label for="address" class="block text-sm font-semibold text-slate-900">
+        Street address <span class="font-medium text-rose-500">*</span>
+      </label>
+    
+        <input
+          id="address"
+          name="address"
+          type="text"
+          value="1208 Benchmark Way"
+          placeholder="Start typing an address"
+          class="block w-full rounded-2xl border px-4 py-3 text-sm shadow-sm border-slate-200 bg-white text-slate-900"
+          required
+        />
+        
+      </div>
+    
+                
+      <div class="space-y-2">
+        
+      <label for="country" class="block text-sm font-semibold text-slate-900">
+        Country
+      </label>
+    
+        <select
+          id="country"
+          name="country"
+          class="block w-full rounded-2xl border bg-white px-4 py-3 text-sm shadow-sm border-slate-200 text-slate-900"
+          
+        >
+          
+                <option value="ca" selected>
+                  Canada
+                </option>
+              
+                <option value="us" >
+                  United States
+                </option>
+              
+                <option value="uk" >
+                  United Kingdom
+                </option>
+              
+        </select>
+        <p class="text-sm text-slate-500">Select menus are also rendered through a reusable component.</p>
+      </div>
+    
+              </div>
+              
+      <label class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
+        <input
+          id="billing-same"
+          name="billingSame"
+          type="checkbox"
+          class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-500"
+          checked
+        />
+        <span class="min-w-0 flex-1">
+          <span class="block font-medium text-slate-900">Billing address matches shipping</span>
+          <span class="mt-1 block text-slate-500">Useful for demonstrating repeated conditional field groups.</span>
+        </span>
+      </label>
+    
+              
+      <fieldset class="space-y-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <legend class="text-sm font-semibold text-slate-900">Delivery speed</legend>
+        <p class="text-sm text-slate-500">Radio groups show more complex form markup without adding benchmark-only abstractions.</p>
+        
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                <input
+                  type="radio"
+                  name="deliverySpeed"
+                  value="standard"
+                  class="mt-1 h-4 w-4 border-slate-300 text-brand-500"
+                  
+                />
+                <span>
+                  <span class="block text-sm font-medium text-slate-900">Standard</span>
+                  <span class="mt-1 block text-sm text-slate-500">Arrives in 4 to 6 business days.</span>
+                </span>
+              </label>
+            
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                <input
+                  type="radio"
+                  name="deliverySpeed"
+                  value="express"
+                  class="mt-1 h-4 w-4 border-slate-300 text-brand-500"
+                  checked
+                />
+                <span>
+                  <span class="block text-sm font-medium text-slate-900">Express</span>
+                  <span class="mt-1 block text-sm text-slate-500">Arrives in 1 to 2 business days.</span>
+                </span>
+              </label>
+            
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3">
+                <input
+                  type="radio"
+                  name="deliverySpeed"
+                  value="pickup"
+                  class="mt-1 h-4 w-4 border-slate-300 text-brand-500"
+                  
+                />
+                <span>
+                  <span class="block text-sm font-medium text-slate-900">Store pickup</span>
+                  <span class="mt-1 block text-sm text-slate-500">Collect from the sample warehouse.</span>
+                </span>
+              </label>
+            
+      </fieldset>
+    
+            </section>
+          </section>
+          <aside class="space-y-6">
+            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-slate-500">Order total</p>
+                  <p class="mt-1 text-3xl font-black tracking-tight text-slate-900">$537</p>
+                </div>
+                <button
+                  type="button"
+                  class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+                  @click="promoOpen = !promoOpen"
+                >
+                  Promo code
+                </button>
+              </div>
+              <div class="mt-4 grid gap-3" x-show="promoOpen" x-transition>
+                
+      <div class="space-y-2">
+        
+      <label for="promo" class="block text-sm font-semibold text-slate-900">
+        Promotion code
+      </label>
+    
+        <input
+          id="promo"
+          name="promo"
+          type="text"
+          value="HOTMETAL15"
+          placeholder="Enter a code"
+          class="block w-full rounded-2xl border px-4 py-3 text-sm shadow-sm border-slate-200 bg-white text-slate-900"
+          
+        />
+        
+      </div>
+    
+                <button type="button" class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white">Apply code</button>
+              </div>
+              <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+                <p>Package count preview: <span class="font-semibold text-slate-900" x-text="quantity"></span></p>
+                <div class="mt-3 flex items-center gap-3">
+                  <button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = Math.max(1, quantity - 1)">-</button>
+                  <button type="button" class="rounded-xl border border-slate-200 px-3 py-2" @click="quantity = quantity + 1">+</button>
+                  <span class="text-xs uppercase tracking-[0.2em] text-slate-400">Static Alpine demo</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </main>
+        
+        
+        <section class="mb-6 grid gap-3">
+          
+                <div
+                  class="rounded-2xl border px-4 py-4 border-amber-200 bg-amber-50 text-amber-900"
+                  x-data="{ open: true }"
+                  x-show="open"
+                  x-transition
+                >
+                  <div class="flex items-start gap-3">
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-semibold">Demo inventory</p>
+                      <p class="mt-1 text-sm">Inventory and totals are static demo values, but the quantity controls and promo state are wired with Alpine.js.</p>
+                    </div>
+                    
+                      <button
+                        type="button"
+                        @click="open = false"
+                        class="rounded-lg px-2 py-1 text-sm font-medium"
+                      >
+                        Dismiss
+                      </button>
+                    
+                  </div>
+                </div>
+              
+        </section>
+      
+        
+      <footer class="mt-10 border-t border-slate-200 px-1 py-6">
+        <div class="flex flex-col gap-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+          <p>Generated with Hotmetal in the samples project. Open the exported files to see the full pages in a browser.</p>
+          <nav class="flex flex-wrap items-center gap-4">
+            
+                  <a href="#docs" class="font-medium hover:text-slate-900">Docs</a>
+                
+                  <a href="#status" class="font-medium hover:text-slate-900">Status</a>
+                
+                  <a href="#support" class="font-medium hover:text-slate-900">Support</a>
+                
+          </nav>
+        </div>
+      </footer>
+    
+          </div>
+        </body>
+      </html>
+    
