@@ -47,13 +47,13 @@ class Tutorial extends FunSuite:
     html"""
     <html>
       <head>
-        tailwindCss
-        htmxJs
+        $tailwindCss
+        $htmxJs
       </head>
       <body>
-        standardHeader
-        mainSection
-        standardFooter
+        $standardHeader
+        $mainSection
+        $standardFooter
       </body>
     </html>
     """
