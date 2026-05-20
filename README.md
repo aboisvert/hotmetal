@@ -40,7 +40,7 @@ The `Html` context is typically created at the root of a document (or for a stan
 - High-performance, low-allocation rendering model designed for server-side HTML generation.
 - Macro-based html interpolator for efficient HTML generation with direct StringBuilder writes.
 - Automatic escaping for interpolated strings and text values to reduce XSS risk.
-- Lightweight component model using ordinary Scala defs, vals, loops, and conditionals.  It's "plain old Scala" <tm>.
+- Lightweight component model using ordinary Scala defs, vals, loops, and conditionals.  It's "plain old Scala".
 - Supports composable Html fragments for reusable (static/dynamic) layouts, components, and cached snippets.
 - Optional typed DSL helpers for common HTML elements and attributes.
 - `Stringify` typeclass allows explicit support for rendering custom datatypes (e.g. dates, numbers, currencies, ...)
@@ -55,11 +55,10 @@ The project also features:
 Start with the narrative walkthrough in [core/src/test/scala/hotmetal/Tutorial.scala](core/src/test/scala/hotmetal/Tutorial.scala). It explains the `Html` context, components written as `val`s and `def`s, and how to compose dynamic pages.
 
 Then take a look at some sample pages,
-- [samples/src/main/scala/hotmetal/samples/CheckoutPage.scala]
-- [samples/src/main/scala/hotmetal/samples/DashboardPage.scala]
-- [samples/src/main/scala/hotmetal/samples/LandingPage.scala]
-- [samples/src/main/scala/hotmetal/samples/SamplePageNav.scala]
-
+- [samples/src/main/scala/hotmetal/samples/CheckoutPage.scala](samples/src/main/scala/hotmetal/samples/CheckoutPage.scala)
+- [samples/src/main/scala/hotmetal/samples/DashboardPage.scala](samples/src/main/scala/hotmetal/samples/DashboardPage.scala)
+- [samples/src/main/scala/hotmetal/samples/LandingPage.scala](samples/src/main/scala/hotmetal/samples/LandingPage.scala)
+- [samples/src/main/scala/hotmetal/samples/SamplePageNav.scala](samples/src/main/scala/hotmetal/samples/SamplePageNav.scala)
 
 ## Requirements
 
