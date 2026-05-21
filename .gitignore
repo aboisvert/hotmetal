@@ -6,7 +6,6 @@
 .vscode/
 
 benchmarks/results/
-samples/generated-pages/
 
 project/.bloop/
 project/metals.sbt
