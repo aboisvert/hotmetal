@@ -54,13 +54,13 @@ The project also features:
 
 ## Tutorial
 
-Start with the narrative walkthrough in [core/src/test/scala/hotmetal/Tutorial.scala](core/src/test/scala/hotmetal/Tutorial.scala). It explains the `Html` context, components written as `val`s and `def`s, and how to compose dynamic pages.
+Start with the narrative walkthrough in [core/src/test/scala/hotmetal/Tutorial.scala](https://github.com/aboisvert/hotmetal/blob/main/core/src/test/scala/hotmetal/Tutorial.scala). It explains the `Html` context, components written as `val`s and `def`s, and how to compose dynamic pages.
 
 Then take a look at some sample pages,
-- [samples/src/main/scala/hotmetal/samples/CheckoutPage.scala](samples/src/main/scala/hotmetal/samples/CheckoutPage.scala)
-- [samples/src/main/scala/hotmetal/samples/DashboardPage.scala](samples/src/main/scala/hotmetal/samples/DashboardPage.scala)
-- [samples/src/main/scala/hotmetal/samples/LandingPage.scala](samples/src/main/scala/hotmetal/samples/LandingPage.scala)
-- [samples/src/main/scala/hotmetal/samples/SamplePageNav.scala](samples/src/main/scala/hotmetal/samples/SamplePageNav.scala)
+- [samples/src/main/scala/hotmetal/samples/CheckoutPage.scala](https://github.com/aboisvert/hotmetal/blob/main/samples/src/main/scala/hotmetal/samples/CheckoutPage.scala)
+- [samples/src/main/scala/hotmetal/samples/DashboardPage.scala](https://github.com/aboisvert/hotmetal/blob/main/samples/src/main/scala/hotmetal/samples/DashboardPage.scala)
+- [samples/src/main/scala/hotmetal/samples/LandingPage.scala](https://github.com/aboisvert/hotmetal/blob/main/samples/src/main/scala/hotmetal/samples/LandingPage.scala)
+- [samples/src/main/scala/hotmetal/samples/SamplePageNav.scala](https://github.com/aboisvert/hotmetal/blob/main/samples/src/main/scala/hotmetal/samples/SamplePageNav.scala)
 
 ## Requirements
 
