@@ -81,9 +81,13 @@ Then take a look at some sample pages,
 
 Artifacts are published to [GitHub Packages](https://github.com/aboisvert/hotmetal/packages) as `com.github.aboisvert:hotmetal_3:<version>`.
 
-GitHub Packages may require authentication even for reads. Provide a GitHub personal access token with at least `read:packages` scope (and `repo` if the package is private).
+A release jar is also available on GitHub (no token required):
+
+`https://github.com/aboisvert/hotmetal/releases/download/v0.1.0/hotmetal_3-0.1.0.jar`
 
 ### sbt
+
+#### Maven dependency
 
 Add the resolver and dependency in `build.sbt` (or `project/*.sbt`):
 
@@ -100,9 +104,36 @@ credentials += Credentials(
 libraryDependencies += "com.github.aboisvert" %% "hotmetal" % "<version>"
 ```
 
-Replace `<version>` with a released version (for example `0.1.0`).
+Replace `<version>` with a released version (for example `0.1.0`). GitHub Packages may require authentication even for reads; provide a personal access token with at least `read:packages` scope (and `repo` if the package is private).
+
+#### Direct jar dependency
+
+Add to `build.sbt` (downloads the jar on first compile):
+
+```scala
+val hotmetalJarUrl =
+  "https://github.com/aboisvert/hotmetal/releases/download/v0.1.0/hotmetal_3-0.1.0.jar"
+
+lazy val downloadHotmetalJar = taskKey[File]("Download Hotmetal jar")
+
+downloadHotmetalJar := {
+  val jar = (Compile / target).value / "hotmetal_3-0.1.0.jar"
+  if (!jar.exists()) {
+    import scala.sys.process._
+    jar.getParentFile.mkdirs()
+    url(hotmetalJarUrl) #> jar !
+  }
+  jar
+}
+
+Compile / unmanagedJars ++= {
+  Seq(Attributed.blank(downloadHotmetalJar.value))
+}
+```
 
 ### scala-cli
+
+#### Maven dependency
 
 In your script or `project.scala`:
 
@@ -112,13 +143,24 @@ In your script or `project.scala`:
 //> using dep com.github.aboisvert::hotmetal:<version>
 ```
 
-Configure Coursier credentials in `~/.config/coursier/credentials.properties` (or via environment variables):
+Replace `<version>` with a released version (for example `0.1.0`). Configure Coursier credentials in `~/.config/coursier/credentials.properties` (or via environment variables):
 
 ```properties
 maven.pkg.github.com=${GITHUB_ACTOR:-github}:${GITHUB_TOKEN}
 ```
 
+#### Direct jar dependency
+
+In your script or `project.scala`:
+
+```scala
+//> using scala 3.3.7
+//> using jar https://github.com/aboisvert/hotmetal/releases/download/v0.1.0/hotmetal_3-0.1.0.jar
+```
+
 ### Mill
+
+#### Maven dependency
 
 In `build.mill`:
 
@@ -142,7 +184,33 @@ def coursierCredentials = coursier.Credentials(
 )
 ```
 
-Set `GITHUB_TOKEN` in the environment before running Mill.
+Replace `<version>` with a released version (for example `0.1.0`). Set `GITHUB_TOKEN` in the environment before running Mill.
+
+#### Direct jar dependency
+
+In `build.mill` (downloads the jar on first build):
+
+```scala
+import mill._
+import mill.scalalib._
+
+object app extends ScalaModule {
+  def scalaVersion = "3.3.7"
+
+  def unmanagedClasspath = Task {
+    val dest = Task.dest / "hotmetal_3-0.1.0.jar"
+    if (!os.exists(dest)) {
+      os.write(
+        dest,
+        requests.get.stream(
+          "https://github.com/aboisvert/hotmetal/releases/download/v0.1.0/hotmetal_3-0.1.0.jar"
+        )
+      )
+    }
+    Seq(PathRef(dest))
+  }
+}
+```
 
 ## Building and testing
 
