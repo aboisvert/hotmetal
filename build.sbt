@@ -4,7 +4,7 @@ ThisBuild / scalaVersion := "3.3.7"
 ThisBuild / scalacOptions ++= Seq("-release:21")
 ThisBuild / javacOptions ++= Seq("--release", "21")
 
-ThisBuild / organization := "com.github.aboisvert"
+ThisBuild / organization := "io.github.aboisvert"
 ThisBuild / homepage := Some(url("https://github.com/aboisvert/hotmetal"))
 ThisBuild / licenses := List("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / scmInfo := Some(
@@ -14,7 +14,7 @@ ThisBuild / scmInfo := Some(
   )
 )
 ThisBuild / developers := List(
-  Developer("aboisvert", "Alain Boisvert", "", url("https://github.com/aboisvert"))
+  Developer("aboisvert", "Alex Boisvert", "", url("https://github.com/aboisvert"))
 )
 ThisBuild / versionScheme := Some("early-semver")
 

@@ -79,7 +79,7 @@ Then take a look at some sample pages,
 
 ## Using Hotmetal as a dependency
 
-Artifacts are published to [GitHub Packages](https://github.com/aboisvert/hotmetal/packages) as `com.github.aboisvert:hotmetal_3:<version>`.
+Artifacts are published to [GitHub Packages](https://github.com/aboisvert/hotmetal/packages) as `io.github.aboisvert:hotmetal_3:<version>`.
 
 A release jar is also available on GitHub (no token required):
 
@@ -101,7 +101,7 @@ credentials += Credentials(
   sys.env.getOrElse("GITHUB_TOKEN", "")
 )
 
-libraryDependencies += "com.github.aboisvert" %% "hotmetal" % "<version>"
+libraryDependencies += "io.github.aboisvert" %% "hotmetal" % "<version>"
 ```
 
 Replace `<version>` with a released version (for example `0.1.0`). GitHub Packages may require authentication even for reads; provide a personal access token with at least `read:packages` scope (and `repo` if the package is private).
@@ -140,7 +140,7 @@ In your script or `project.scala`:
 ```scala
 //> using scala 3.3.7
 //> using repository https://maven.pkg.github.com/aboisvert/hotmetal
-//> using dep com.github.aboisvert::hotmetal:<version>
+//> using dep io.github.aboisvert::hotmetal:<version>
 ```
 
 Replace `<version>` with a released version (for example `0.1.0`). Configure Coursier credentials in `~/.config/coursier/credentials.properties` (or via environment variables):
@@ -168,7 +168,7 @@ In `build.mill`:
 import mill._
 import mill.scalalib._
 
-def hotmetalDep = ivy"com.github.aboisvert::hotmetal:<version>"
+def hotmetalDep = ivy"io.github.aboisvert::hotmetal:<version>"
 
 // In your module:
 def repositoriesTask = Task {
