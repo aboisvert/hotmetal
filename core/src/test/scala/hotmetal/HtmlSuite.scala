@@ -219,6 +219,106 @@ class HtmlSuite extends FunSuite with CompileUtils with HtmlAssertions:
     val escaped = HtmlUtils.escapeHtml(clean)
     assert(escaped.eq(clean))
 
+  test("Html.escapeAttr preserves slashes in URL paths"):
+    assertEquals(
+      obtained = Html.escapeAttr("/login").toString,
+      expected = "/login"
+    )
+
+  test("Html.escapeAttr still escapes other dangerous characters"):
+    assertEquals(
+      obtained = Html.escapeAttr("\"foo\" bar").toString,
+      expected = "&quot;foo&quot; bar"
+    )
+    assertEquals(
+      obtained = Html.escapeAttr("a<b").toString,
+      expected = "a&lt;b"
+    )
+    assertEquals(
+      obtained = Html.escapeAttr("a&b").toString,
+      expected = "a&amp;b"
+    )
+
+  test("Html.escapeAttr leaves apostrophes literal in double-quoted attribute context"):
+    assertEquals(
+      obtained = Html.escapeAttr("Joe's Diner").toString,
+      expected = "Joe's Diner"
+    )
+
+  test("HtmlUtils.escapeHtmlAttr returns the original String when no escaping is needed"):
+    val clean = "/login"
+    val escaped = HtmlUtils.escapeHtmlAttr(clean)
+    assert(escaped.eq(clean))
+
+  test("attr() escapes dangerous characters in attribute values"):
+    val actual = Html:
+      elem("div")("data" := """<x "y">""")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div data="&lt;x &quot;y&quot;&gt;"></div>"""
+    )
+
+  test("attr() preserves slashes in URL attribute values"):
+    val actual = Html:
+      elem("a")("href" := "/login")(text("Login"))
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<a href="/login">Login</a>"""
+    )
+
+  test("attr() leaves apostrophes literal"):
+    val actual = Html:
+      elem("div")("title" := "Joe's Diner")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div title="Joe's Diner"></div>"""
+    )
+
+  test("attr() escapes double quotes to prevent attribute breakout"):
+    val actual = Html:
+      elem("div")("size" := """12"""")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div size="12&quot;"></div>"""
+    )
+
+  test("attr() escapes both quote types when value contains double quotes"):
+    val actual = Html:
+      elem("div")("data" := """He "x" y's""")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div data="He &quot;x&quot; y's"></div>"""
+    )
+
+  test("attr() neutralizes double-quote breakout attempts"):
+    val actual = Html:
+      elem("div")("title" := """a" onclick="alert(1)""")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div title="a&quot; onclick=&quot;alert(1)"></div>"""
+    )
+
+  test("attr() leaves apostrophe-shaped injection attempts harmless in double-quoted attrs"):
+    val actual = Html:
+      elem("div")("title" := "a' onclick='alert(1)")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div title="a' onclick='alert(1)"></div>"""
+    )
+
+  test("attr() escapes ampersands in attribute values"):
+    val actual = Html:
+      elem("div")("data" := "a&b")()
+    assertEquals(
+      obtained = actual.toString,
+      expected = """<div data="a&amp;b"></div>"""
+    )
+
+  test("Html.writeInto on empty buffer writes no bytes"):
+    val baos = java.io.ByteArrayOutputStream()
+    Html.empty.writeInto(baos)
+    assertEquals(obtained = baos.size(), expected = 0)
+
   test("Interpolator reports an error on an unapplied def"):
     val foo = () => "foo"
 

@@ -26,19 +26,19 @@ final class Html(initialCapacity: Int = 256):
   private final val buffer = java.lang.StringBuilder(initialCapacity)
 
   inline def append(inline s: String): Unit =
-    buffer.append(s)
+    { buffer.append(s); () }
 
   inline def append(inline chars: CharSequence): Unit =
-    buffer.append(chars)
+    { buffer.append(chars); () }
 
   inline def append(c: Char): Unit =
-    buffer.append(c)
+    { buffer.append(c); () }
 
   inline def append(i: Int): Unit =
-    buffer.append(i)
+    { buffer.append(i); () }
 
   inline def append(l: Long): Unit =
-    buffer.append(l)
+    { buffer.append(l); () }
 
   def length: Int = buffer.length
 
@@ -57,19 +57,22 @@ final class Html(initialCapacity: Int = 256):
     new ByteArrayInputStream(bytes, 0, bytes.length)
 
   def writeInto(out: OutputStream, charset: Charset = StandardCharsets.UTF_8): Unit =
-    if buffer.length == 0 then return
     Html.writeEncoded(buffer, out, charset)
 
 
+  /** Append a double-quoted attribute when `value` is non-null.
+    *
+    * Hotmetal always emits `name="value"`. User-controlled double quotes in `value`
+    * are escaped so they cannot terminate the attribute value.
+    */
   def attrNotNull(name: String, value: String): Unit =
     if value != null then
       append(' ')
       append(name)
       append('=')
       append('"')
-      append(value)
+      append(Html.escapeAttr(value))
       append('"')
-      append(' ')
 
   /** Append an attribute without a value, e.g. "disabled" or "required". */
   def attrNoValue(name: String): Unit =
@@ -158,6 +161,17 @@ object Html:
   inline def escape(chars: CharSequence, optimize: Boolean = true): CharSequence =
     HtmlUtils.escapeHtml(chars, optimize)
 
+  /** Escape characters dangerous in hotmetal's double-quoted attribute values.
+    *
+    * Escapes `&`, `<`, `>`, and `"`. Apostrophes and `/` are left literal because
+    * hotmetal always wraps attribute values in double quotes.
+    *
+    * Not suitable for single-quoted or unquoted attribute syntax; use `attr()` / `:=`
+    * for library-generated attributes, or own escaping if emitting custom markup.
+    */
+  inline def escapeAttr(chars: CharSequence, optimize: Boolean = true): CharSequence =
+    HtmlUtils.escapeHtmlAttr(chars, optimize)
+
   /** Append a text fragment into the Html context.
     *
     * This method *always* escapes dangerous characters to prevent XSS.
@@ -188,13 +202,18 @@ object Html:
     buf.append(name)
     buf.append('>')
 
-  /** Append an attribute into the Html context. */
+  /** Append a double-quoted attribute into the Html context.
+    *
+    * Always emits `name="value"`. The value is escaped for a double-quoted attribute
+    * context to prevent XSS and attribute-value breakout. Apostrophes remain literal;
+    * `/` is not escaped (e.g. `/login` stays as-is).
+    */
   def attr(name: String, value: String)(using html: Html): Unit =
     html.append(' ')
     html.append(name)
     html.append('=')
     html.append('"')
-    html.append(value)
+    html.append(Html.escapeAttr(value))
     html.append('"')
 
   inline def attrNoValue(name: String)(using html: Html): Unit =
@@ -340,9 +359,16 @@ object Html:
     inline def :=(value: String)(using Html): Unit =
       attr(s, value)
 
-  /** Append a sequence of attribute values into the Attrs context.
+  /** Join several values with spaces, suitable as an attribute value.
     *
-    * Syntax: "class" := attrValues("btn", "btn-primary")
+    * This helper produces a space-separated value string — not an attribute declaration.
+    * Use it inside an attribute assignment:
+    *
+    * {{{
+    *   "class" := attrValues("btn", "btn-primary")
+    * }}}
+    *
+    * Which emits: `class="btn btn-primary"`
     */
   def attrValues(ss: String*)(using html: Html): Unit =
     var i = 0

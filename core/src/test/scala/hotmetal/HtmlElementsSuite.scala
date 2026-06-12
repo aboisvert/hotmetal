@@ -27,6 +27,12 @@ class HtmlElementsSuite extends FunSuite with HtmlAssertions:
         text("Dashboard")
     assertHtmlEquals(actual.toString, """<title id="t"  class="page-title" >Dashboard</title>""")
 
+  test("attrNotNull leaves apostrophes literal in element attributes"):
+    val actual = Html:
+      title(`class` = "Joe's page"):
+        text("Dashboard")
+    assertHtmlEquals(actual.toString, """<title class="Joe's page" >Dashboard</title>""")
+
   test("meta renders void element"):
     val actual = Html:
       meta(charset = "utf-8")
@@ -574,6 +580,13 @@ class HtmlElementsSuite extends FunSuite with HtmlAssertions:
       actual.toString,
       """<form action="/login"  method="post" ><input type="text"  name="email" /></form>"""
     )
+
+  test("input value attribute escapes markup but preserves slashes"):
+    val actual = Html:
+      input(value = """<script>alert("x")</script>""")
+    val html = actual.toString
+    assert(html.contains("""value="&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;""""))
+    assert(!html.contains("&#47;"))
 
   test("label renders nested text"):
     val actual = Html:
