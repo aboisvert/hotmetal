@@ -36,7 +36,7 @@ ThisBuild / credentials ++= sys.env.get("GITHUB_TOKEN").toList.map(githubPackage
 lazy val commonSettings = Seq()
 
 lazy val testSettings = Seq(
-  libraryDependencies += "org.scalameta" %% "munit" % "1.2.3" % Test
+  libraryDependencies += "org.scalameta" %% "munit" % "1.3.6" % Test
 )
 
 lazy val core = (project in file("core"))
