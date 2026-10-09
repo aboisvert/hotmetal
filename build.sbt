@@ -6,7 +6,7 @@ ThisBuild / javacOptions ++= Seq("--release", "21")
 
 ThisBuild / organization := "io.github.aboisvert"
 ThisBuild / homepage := Some(url("https://github.com/aboisvert/hotmetal"))
-ThisBuild / licenses := List("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / licenses := List(License("Apache-2.0", uri("https://www.apache.org/licenses/LICENSE-2.0")))
 ThisBuild / scmInfo := Some(
   ScmInfo(
     url("https://github.com/aboisvert/hotmetal"),
