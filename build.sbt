@@ -1,6 +1,6 @@
 import pl.project13.scala.sbt.JmhPlugin
 
-ThisBuild / scalaVersion := "3.3.7"
+ThisBuild / scalaVersion := "3.10.0"
 ThisBuild / scalacOptions ++= Seq("-release:21")
 ThisBuild / javacOptions ++= Seq("--release", "21")
 

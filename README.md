@@ -64,7 +64,7 @@ Then take a look at some sample pages,
 
 ## Requirements
 
-- [Scala](https://www.scala-lang.org/) 3.3.7
+- [Scala](https://www.scala-lang.org/) 3.10.0
 - [Java](https://openjdk.org/) 21
 - [sbt](https://www.scala-sbt.org/)
 
